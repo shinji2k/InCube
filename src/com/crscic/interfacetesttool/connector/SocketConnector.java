@@ -15,7 +15,6 @@ import java.util.List;
 import com.crscic.interfacetesttool.config.SocketSetting;
 import com.crscic.interfacetesttool.exception.ConnectException;
 import com.crscic.interfacetesttool.log.Log;
-import com.k.util.ByteUtils;
 import com.k.util.CollectionUtils;
 
 /**
@@ -45,7 +44,7 @@ public class SocketConnector implements Connector
 		else
 			logInfo = "服务器IP：" + this.ip + ", 服务器端口：" + this.port + ", 连接方式：" + (this.keepAlive ? "长连接" : "短连接");
 
-		Log.info("接口类型为Socket-" + this.type + ", " + logInfo);
+		Log.debug("接口类型为Socket-" + this.type + ", " + logInfo);
 	}
 
 	@Override
@@ -111,8 +110,8 @@ public class SocketConnector implements Connector
 				if (-1 != is.read(buff, 0, len))
 					CollectionUtils.copyArrayToList(recvData, buff);
 			}
-			if (recvData.size() != 0)
-				Log.debug("接收：" + ByteUtils.byteToHexString(recvData));
+//			if (recvData.size() != 0)
+//				Log.debug("接收 in connector：" + ByteUtils.byteToHexString(recvData));
 		}
 		catch (IOException e)
 		{
@@ -131,17 +130,17 @@ public class SocketConnector implements Connector
 		{
 			if (type.toLowerCase().equals("client"))
 			{
-				Log.info("开始连接服务: " + ip + ":" + port);
+				Log.debug("开始连接服务: " + ip + ":" + port);
 				connector = new Socket(ip, port);
-				Log.info("连接成功");
+				Log.debug("连接成功");
 			}
 			else
 			{
-				Log.info("启动服务...");
+				Log.debug("启动服务...");
 				server = new ServerSocket(port, 5);
-				Log.info("等待客户端连接...");
+				Log.debug("等待客户端连接...");
 				connector = server.accept(); // 不确定当离开这个方法后，server会不会销毁
-				Log.info("连接客户端：" + connector.getRemoteSocketAddress().toString().substring(1));
+				Log.debug("连接客户端：" + connector.getRemoteSocketAddress().toString().substring(1));
 			}
 		}
 		catch (UnknownHostException e)

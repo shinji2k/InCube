@@ -10,20 +10,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import org.dom4j.DocumentException;
 import org.junit.Test;
 
-import com.crscic.interfacetesttool.DataFactory;
-import com.crscic.interfacetesttool.Service;
-import com.crscic.interfacetesttool.config.SendSetting;
-import com.crscic.interfacetesttool.data.Data;
 import com.crscic.interfacetesttool.data.Encryption;
-import com.crscic.interfacetesttool.data.ProtocolConfig;
-import com.crscic.interfacetesttool.exception.GenerateDataException;
-import com.crscic.interfacetesttool.exception.ParseXMLException;
 import com.k.util.ByteUtils;
 import com.k.util.CollectionUtils;
 
@@ -148,18 +139,6 @@ public class Tester
 	}
 
 	@Test
-	public void createDataTest() throws GenerateDataException, DocumentException, ParseXMLException
-	{
-		Data data = new Data();
-		DataFactory df = new DataFactory("config/config.xml");
-		SendSetting setting = df.getSendSetting();
-		List<ProtocolConfig> config = df.getDataConfig(setting.getSettingFilePath(), setting.getProtocolList());
-		Service service = new Service();
-		byte[] b = data.getSendData(service.getProtocolConfigByProtocolName(config, "analog"), new HashMap<String, byte[]>());
-		System.out.println(ByteUtils.byteToHexString(b));
-	}
-	
-	@Test
 	public void pubTest()
 	{
 		byte[] intByte = ByteUtils.getBytes(225); // 返回的是4字节的数组
@@ -168,5 +147,10 @@ public class Tester
 		b[0] = (byte)((intByte[0] << 8) | intByte[1]);
 		b[1] = (byte)((intByte[2] << 8) | intByte[3]);
 		System.out.println(ByteUtils.byteToHexString(ByteUtils.byteToAsc(b)));
+	}
+
+	@Test
+	public void test()
+	{
 	}
 }

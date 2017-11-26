@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<protocols desc="这个列表提供配置文件中配置的协议列表方便查看，程序并不会使用">
+		<pro desc="实时数据响应-402">real-time</pro>
+		<pro desc="登录响应">login-response</pro>
+	</protocols>
+
+	<real-time>
+		<part name="head" desc="数据包头">
+			<type>aptotic</type>
+			<value>23646C686A7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pk_type,cnt,id,enum_state,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>increase</type>
+			<value>
+				<part name="increase" desc="节点自增需要的信息">
+					<type>increase</type>
+					<!-- 由 1 开始-->
+					<value>1</value>
+					<!-- 每次加 1 -->
+					<split>1</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>int</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>int</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>00000192</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+	</real-time>
+
+	<login-response>
+		<part name="102" desc="登录响应信息全部数据作为固定字段回复">
+			<type>aptotic</type>
+			<value>23646c686a74787879230000004800023cfd0000006561646d696e202020202020202020202020202020202020202020202020202020202020202020202061646d696e2020202020202020202020202020208b96</value>
+			<class>byte</class>
+			<len>84</len>
+		</part>
+	</login-response>
+</root>

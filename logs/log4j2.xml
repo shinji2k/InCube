@@ -19,10 +19,10 @@
 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %msg%n" />
 			<Policies />
 		</RollingFile>
-		<!-- 自定义的Appender，用于实现将日志输出到GUI -->
+		<!-- 自定义的Appender，用于实现将日志输出到GUI 
 		<TextBoxAppender name="TextBoxAppender">
 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level %msg%n" />
-		</TextBoxAppender>
+		</TextBoxAppender>-->
 	</appenders>
 	<!--然后定义logger，只有定义了logger并引入的appender，appender才会生效 -->
 	<loggers>
@@ -30,7 +30,7 @@
 		<root level="${level}">
 			<appender-ref ref="RollingFile" />
 			<appender-ref ref="Console" />
-			<appender-ref ref="TextBoxAppender"/>
+			<!-- <appender-ref ref="TextBoxAppender"/> -->
 		</root>
 	</loggers>
 </configuration>
