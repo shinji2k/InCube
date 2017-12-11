@@ -7,6 +7,8 @@ package com.crscic.interfacetesttool.config;
  */
 public class Request
 {
+	private String timeout;
+	private String retry;
 	private String pro;
 	private Response response;
 	
@@ -37,5 +39,47 @@ public class Request
 	public void setResponse(Response response)
 	{
 		this.response = response;
+	}
+	/**
+	 * @return the timeout
+	 */
+	public String getTimeout()
+	{
+		return timeout;
+	}
+	/**
+	 * @param timeout the timeout to set
+	 */
+	public void setTimeout(String timeout)
+	{
+		this.timeout = timeout;
+	}
+	/**
+	 * @return the retry
+	 */
+	public String getRetry()
+	{
+		return retry;
+	}
+	/**
+	 * @param retry the retry to set
+	 */
+	public void setRetry(String retry)
+	{
+		this.retry = retry;
+	}
+	/**
+	 * @return the pro
+	 */
+	public String getPro()
+	{
+		return pro;
+	}
+	/**
+	 * @param pro the pro to set
+	 */
+	public void setPro(String pro)
+	{
+		this.pro = pro;
 	}
 }

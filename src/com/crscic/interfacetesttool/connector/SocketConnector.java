@@ -23,13 +23,13 @@ import com.k.util.CollectionUtils;
  */
 public class SocketConnector implements Connector
 {
-	private String type;
-	private String ip;
-	private int port;
-	private boolean keepAlive;
+	protected String type;
+	protected String ip;
+	protected int port;
+	protected boolean keepAlive;
 
-	private Socket connector;
-	private ServerSocket server;
+	protected Socket connector;
+	protected ServerSocket server;
 
 	public SocketConnector(SocketSetting sockCfg)
 	{
@@ -184,5 +184,18 @@ public class SocketConnector implements Connector
 		if (connector == null || connector.isClosed())
 			return false;
 		return true;
+	}
+
+	@Override
+	public String getRemoteIp()
+	{
+		return connector.getRemoteSocketAddress().toString().substring(1);
+	}
+
+
+	@Override
+	public String getLocalIp()
+	{
+		return connector.getLocalAddress().toString().substring(1);
 	}
 }

@@ -31,6 +31,41 @@ public class ConfigHandler
 		this.xml = xml;
 	}
 
+	public InterChangeSetting getInterChangeSetting()
+	{
+		// 发送重试次数与超时时间
+				Element interChangeSettingEle = xml.getSingleElement("/root/interchange");
+				if (interChangeSettingEle == null)
+					return null;
+				InterChangeSetting interChangeSetting = new InterChangeSetting();
+
+				// 协议文件路径
+				interChangeSetting.setFile(interChangeSettingEle.attributeValue("file"));
+
+				// 请求列表，有多个请求
+				List<Element> requestEleList = XmlHelper.getElements(interChangeSettingEle);
+				List<Request> requestList = new ArrayList<Request>();
+				for (Element requestEle : requestEleList)
+				{
+					Request request = new Request();
+					request.setTimeout(requestEle.attributeValue("timeout"));
+					request.setRetry(requestEle.attributeValue("retry"));
+					request.setSendProtocol(requestEle.elementTextTrim("pro"));
+
+					// 回复信息
+					Element respEle = requestEle.element("response");
+					Response response = getResponse(respEle);
+					
+					request.setResponse(response);
+					requestList.add(request);
+				}
+
+				interChangeSetting.setRequest(requestList);
+
+				return interChangeSetting;
+	}
+	
+	
 	/**
 	 * 获取解析相关设置信息
 	 * 
@@ -127,7 +162,7 @@ public class ConfigHandler
 		if (respNode == null)
 			return null;
 
-		List<Element> respEleList = xml.getElements("//response");
+		List<Element> respEleList = xml.getElements("/root/reply/response");
 		boolean nullReply = false;
 
 		Log.debug("自动回复概况：");
@@ -313,8 +348,11 @@ public class ConfigHandler
 		if (quoteNode != null)
 		{
 			List<Element> quoteFieldList = XmlHelper.getElements(quoteNode);
-			for (Element quoteField : quoteFieldList)
-				response.setQuoteInfo(quoteField.attributeValue("name"), quoteField.getTextTrim());
+			if (quoteFieldList.size() != 0)
+			{
+				for (Element quoteField : quoteFieldList)
+					response.setQuoteInfo(quoteField.attributeValue("name"), quoteField.getTextTrim());
+			}
 		}
 		
 		return response;

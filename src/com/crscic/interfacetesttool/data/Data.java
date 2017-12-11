@@ -45,7 +45,22 @@ public class Data
 		partMem = new ArrayList<PartMem>();
 	}
 
-	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> quoteMap) throws GenerateDataException
+	/**
+	 * 获取发送的数据
+	 * 
+	 * @param proConfig
+	 *            协议配置信息
+	 * @param quoteMap
+	 *            引用字段
+	 * @param paramMap
+	 *            参数字段
+	 * @return
+	 * @throws GenerateDataException
+	 * @author zhaokai
+	 * @create 2017年12月1日 下午5:49:25
+	 */
+	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> quoteMap, Map<String, byte[]> paramMap)
+			throws GenerateDataException
 	{
 		List<Part> partList = proConfig.getPart();
 
@@ -67,7 +82,7 @@ public class Data
 			String attrInfo = part.getAttribute().get("name");
 			byte[] b = null;
 
-			b = getPartData(part, quoteMap);
+			b = getPartData(part, quoteMap, paramMap);
 			res.put(attrInfo, CollectionUtils.byteToByte(b));
 		}
 		// 补完之前略过的内容
@@ -91,7 +106,7 @@ public class Data
 
 		if (this.increaseMem != -1)
 			this.proIncreaseMem.put(proConfig.getProtocolName(), this.increaseMem);
-		
+
 		fileOrderMem++;
 		proFileOrderMem.put(proConfig.getProtocolName(), fileOrderMem);
 		fileRandomMem = 0; // 重置为0，下次调用的时候判断要是0的话生成新的随机数，避免重复读取
@@ -224,12 +239,16 @@ public class Data
 	 * 递归调用，组装part节点中的内容
 	 *
 	 * @param part
+	 *            字段信息
+	 * @quoteMap 引用自请求中的信息
+	 * @paramMap 外部参数信息
 	 * @return
 	 * @author zhaokai
 	 * @version 2017年3月1日 上午10:17:00
 	 * @throws AppException
 	 */
-	private byte[] getPartData(Part part, Map<String, byte[]> quoteMap) throws GenerateDataException
+	private byte[] getPartData(Part part, Map<String, byte[]> quoteMap, Map<String, byte[]> paramMap)
+			throws GenerateDataException
 	{
 		String typeString = part.getType();
 		byte[] b = null;
@@ -251,7 +270,7 @@ public class Data
 			// 先将计算长度相关参数缓存，统一最后再计算
 			setPartMem(part);
 		else if (typeString.equals("generate"))// 递归
-			b = getGenerateData(part, quoteMap);
+			b = getGenerateData(part, quoteMap, paramMap);
 		else if (typeString.equals("time")) // 时间格式
 			b = getTimeData(part);
 		else if (typeString.equals("random")) // 随机选取
@@ -260,10 +279,36 @@ public class Data
 			setPartMem(part);
 		else if (typeString.equals("increase"))
 			b = getIncreaseData(part);
+		else if (typeString.equals("parameter"))
+			b = getParameterData(part, paramMap);
 		else
 			GenerateDataException.nullNodeValueException(nodeName, "type");
 		return b;
 
+	}
+
+	/**
+	 * 根据外部参数返回生成的字段数据
+	 * 
+	 * @param part
+	 *            字段信息
+	 * @param paramMap
+	 *            外部参数
+	 * @return
+	 * @author zhaokai
+	 * @create 2017年12月1日 下午5:53:23
+	 */
+	private byte[] getParameterData(Part part, Map<String, byte[]> paramMap)
+	{
+		if (paramMap == null)
+			return null;
+		String fieldName = part.getAttribute().get("name");
+		byte[] b = null;
+		if (paramMap.containsKey(fieldName))
+		{
+			b = paramMap.get(fieldName);
+		}
+		return b;
 	}
 
 	/**
@@ -418,7 +463,8 @@ public class Data
 		return b;
 	}
 
-	private byte[] getGenerateData(Part part, Map<String, byte[]> quoteMap) throws GenerateDataException
+	private byte[] getGenerateData(Part part, Map<String, byte[]> quoteMap, Map<String, byte[]> paramMap)
+			throws GenerateDataException
 	{
 		List<Part> childPartList = part.getChildNodeList();
 		String splitString = null;
@@ -429,7 +475,7 @@ public class Data
 		List<Byte> res = new ArrayList<Byte>();
 		for (Part childPart : childPartList)
 		{
-			byte[] b = getPartData(childPart, quoteMap);
+			byte[] b = getPartData(childPart, quoteMap, paramMap);
 			CollectionUtils.copyArrayToList(res, b);
 			CollectionUtils.copyArrayToList(res, split);
 		}
@@ -628,10 +674,10 @@ public class Data
 		}
 		else if (classString.equals("float"))
 		{
-			Float f = new Float(Float.parseFloat(src) * 100);
+			// Float f = new Float(Float.parseFloat(src) * 100);
 			// 按照铁标只需要float乘以100发送，不需要转int
-			// b = ByteUtils.getBytes(f);
-			b = ByteUtils.getBytes(f.intValue());
+			b = ByteUtils.getBytes(Float.parseFloat(src));
+			// b = ByteUtils.getBytes(f.intValue());
 		}
 		else if (classString.equals("hextobyte"))
 		{
@@ -663,13 +709,35 @@ public class Data
 			int srcInt = Integer.parseInt(src);
 			b = ByteUtils.getBytes(srcInt);
 		}
+		else if (classString.toLowerCase().equals("scadaid"))
+		{
+			b = ByteUtils.scadaIdToBytes(src);
+		}
+		else if (classString.toLowerCase().equals("scadafatherid"))
+		{
+			String[] parts = src.split("\\.");
+			for (int i = parts.length - 1; i > -1; i--)
+			{
+				if (!parts[i].equals("0"))
+				{
+					parts[i] = "0";
+					break;
+				}
+			}
+			StringBuilder fatherIdStr = new StringBuilder();
+			for (int i = 0; i < parts.length; i++)
+				fatherIdStr.append(parts[i] + ".");
+			
+			fatherIdStr = fatherIdStr.deleteCharAt(fatherIdStr.length() - 1);
+			b = ByteUtils.scadaIdToBytes(fatherIdStr.toString());
+		}
 		else
 		{
 			b = ByteUtils.getBytes(src);
 		}
 		return b;
 	}
-
+	
 	/**
 	 * 长度不足时填充指定字节补足长度
 	 *

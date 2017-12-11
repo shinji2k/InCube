@@ -331,4 +331,18 @@ public class ComConnector implements Connector
 		return isOpen;
 	}
 
+
+	@Override
+	public String getRemoteIp()
+	{
+		return "";
+	}
+
+
+	@Override
+	public String getLocalIp()
+	{
+		return "";
+	}
+
 }

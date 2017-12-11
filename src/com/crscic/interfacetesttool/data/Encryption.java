@@ -77,6 +77,28 @@ public class Encryption
 	}
 
 	/**
+	 * 获取CRC校验，长度2字节。采用CRC-16/8005 IBM SDLC encode（x16+x15+x2+1）加密
+	 * @param data
+	 * @return
+	 * @author ken_8
+	 * @create 2017年11月30日 上午12:42:04
+	 */
+	public static byte[] getCrcData(List<Byte> data)
+	{
+		if (data.size() == 0)
+			return null;
+		byte[] src = new byte[data.size()];
+		for (int i = 0; i < src.length; i++)
+			src[i] = data.get(i);
+		List<Byte> crc = CRC16.calcCrc16(src);
+		byte[] res = new byte[2];
+		res[0] = crc.get(0);
+		res[1] = crc.get(1);
+		
+		return res;
+	}
+	
+	/**
 	 * 获取CRC校验，长度2字节。采用CRC-16/MODBUS（x16+x15+x2+1）加密
 	 *
 	 * @param data
@@ -84,7 +106,7 @@ public class Encryption
 	 * @author zhaokai
 	 * @version 2017年4月2日 上午9:57:20
 	 */
-	public static byte[] getCrcData(List<Byte> data)
+	public static byte[] getCrcModbusData(List<Byte> data)
 	{
 		int len = data.size();
 

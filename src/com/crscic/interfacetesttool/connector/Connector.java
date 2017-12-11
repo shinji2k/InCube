@@ -37,4 +37,9 @@ public interface Connector
 	public boolean isOpen();
 	
 	public void closeConnect() throws ConnectException;
+	
+	public String getRemoteIp();
+	
+	public String getLocalIp();
+	
 }

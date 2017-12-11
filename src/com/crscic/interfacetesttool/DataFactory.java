@@ -8,6 +8,7 @@ import java.util.Map;
 import org.dom4j.DocumentException;
 
 import com.crscic.interfacetesttool.config.ConfigHandler;
+import com.crscic.interfacetesttool.config.InterChangeSetting;
 import com.crscic.interfacetesttool.config.ParseSetting;
 import com.crscic.interfacetesttool.config.ReplySetting;
 import com.crscic.interfacetesttool.config.Request;
@@ -28,7 +29,7 @@ public class DataFactory
 	private static ConfigHandler setting;
 	private Connector connector;
 	private XmlHelper configXml;
-	
+
 	public ParseSetting getParseSetting(String configFilePath) throws DocumentException
 	{
 		XmlHelper xml = new XmlHelper(configFilePath);
@@ -90,6 +91,13 @@ public class DataFactory
 		return setting.getReplySetting();
 	}
 
+	public InterChangeSetting getInterChangeSetting()
+	{
+		if (setting == null)
+			setting = new ConfigHandler(configXml);
+		return setting.getInterChangeSetting();
+	}
+
 	/**
 	 * 生成发送数据
 	 * 
@@ -99,7 +107,8 @@ public class DataFactory
 	public byte[] getSendData(ProtocolConfig proConfig) throws GenerateDataException
 	{
 		Data data = new Data();
-		return data.getSendData(proConfig, new HashMap<String, byte[]>());
+		//TODO: 加入paramMap
+		return data.getSendData(proConfig, new HashMap<String, byte[]>(), new HashMap<String, byte[]>());
 	}
 
 	/**
@@ -113,7 +122,7 @@ public class DataFactory
 	 * @throws ParseXMLException
 	 * @date 2017年9月29日 下午6:36:05
 	 */
-	public <T> List<ProtocolConfig> getDataConfig(String settingFilePath, List<T> entityList)
+	public static <T> List<ProtocolConfig> getDataConfig(String settingFilePath, List<T> entityList)
 			throws DocumentException, ParseXMLException
 	{
 		List<ProtocolConfig> proCfgList = null;
