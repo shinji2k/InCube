@@ -1,0 +1,28 @@
+1.退出处理。
+	GUI中增加一个停止按钮。点击后设置flag为false。service中的循环一直判断flag，false时退出。（完成）
+		问题：如果处于accept阻塞阶段怎么退出？（未处理）
+		
+2.配置文件中支持param节点，有以下想法。
+	<!-- 参数设置 name=参数名，调用时使用； quoteSrc=该参数为引用参数，引用的数据源，request：引用请求节点，param：引用其他参数； 
+		quoteType=引用类型，part：quoteSrc为request时引用协议某字段的值，node：引用节点下某节点的值 value=参数值，quoteType为part时协议配置文件中字段名称，为node时节点名称，quote系列参数为空时就为参数值 -->
+	<param name="addr" quoteSrc="request" quoteType="part" value="adr" />
+	对应的获取配置方法：
+	//配置文件参数
+	List<Element> paramNodeList = xml.getElements("/root/param");
+	if (paramNodeList.size() > 0)
+	{
+		List<SettingParam> paramList = new ArrayList<SettingParam>();
+		for (Element paramNode : paramNodeList)
+		{
+			SettingParam param = new SettingParam();
+			param.setName(paramNode.attributeValue("name"));
+			param.setQuoteSrc(paramNode.attributeValue("quoteSrc"));
+			param.setQuoteType(paramNode.attributeValue("quoteType"));
+			param.setValue(paramNode.attributeValue("value"));
+			
+			paramList.add(param);
+		}
+		
+		parseSetting.setParamList(paramList);
+	}
+	

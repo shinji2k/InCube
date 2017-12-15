@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.crscic.interfacetesttool.data.Encryption;
+import com.crscic.incube.data.Encryption;
 import com.k.util.ByteUtils;
 import com.k.util.CollectionUtils;
 
