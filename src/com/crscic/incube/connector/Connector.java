@@ -42,4 +42,6 @@ public interface Connector
 	
 	public String getLocalIp();
 	
+	public boolean isServer();
+	
 }

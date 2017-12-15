@@ -10,6 +10,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.crscic.incube.log.Log;
 import com.k.reflect.ReflectUtils;
 import com.k.util.StringUtils;
 
@@ -18,10 +19,17 @@ public class XmlHelper
 	private SAXReader saxReader;
 	private Document xmlDocument;
 
-	public void loadXml(String xmlPath) throws DocumentException
+	public void loadXml(String xmlPath)
 	{
 		saxReader = new SAXReader();
-		xmlDocument = saxReader.read(xmlPath);
+		try
+		{
+			xmlDocument = saxReader.read(xmlPath);
+		}
+		catch (DocumentException e)
+		{
+			Log.error("加载配置文件" + xmlPath + "错误", e);
+		}
 	}
 
 	public Element getSingleElement(String xpath)
@@ -46,9 +54,7 @@ public class XmlHelper
 	 * 获得节点下所有子节点
 	 * 
 	 * @param ele
-	 * @return 
-	 * zhaokai 
-	 * 2017年9月27日 下午11:20:03
+	 * @return zhaokai 2017年9月27日 下午11:20:03
 	 */
 	public static List<Element> getElements(Element ele)
 	{
@@ -118,13 +124,12 @@ public class XmlHelper
 		return ret;
 	}
 
-	/***************************************************************/
 	public XmlHelper()
 	{
 		super();
 	}
 
-	public XmlHelper(String xmlPath) throws DocumentException
+	public XmlHelper(String xmlPath)
 	{
 		loadXml(xmlPath);
 	}

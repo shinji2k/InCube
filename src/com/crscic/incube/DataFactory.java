@@ -40,9 +40,10 @@ public class DataFactory
 	 * @return
 	 * @throws DocumentException
 	 * @author zhaokai
+	 * @throws ParseXMLException 
 	 * @create 2017年12月13日 下午5:46:44
 	 */
-	public Map<String, Map<String, byte[]>> getConnParam() throws DocumentException
+	public Map<String, Map<String, byte[]>> getConnParam() throws ParseXMLException
 	{
 		if (setting == null)
 			setting = new ConfigHandler(configXml);
@@ -57,7 +58,7 @@ public class DataFactory
 		return parseSetting;
 	}
 
-	public DataFactory(String configPath) throws DocumentException
+	public DataFactory(String configPath)
 	{
 		configXml = new XmlHelper();
 		Log.debug("加载配置文件：" + configPath);
@@ -70,7 +71,7 @@ public class DataFactory
 	 * @return
 	 * @author ken_8 2017年9月12日 上午12:25:33
 	 */
-	public Connector getConnector(String connConf) throws DocumentException
+	public Connector getConnector(String connConf)
 	{
 		if (setting == null)
 			setting = new ConfigHandler(configXml);
@@ -133,11 +134,10 @@ public class DataFactory
 	 * @author zhaokai 2017年9月12日 下午12:38:22
 	 * @throws GenerateDataException
 	 */
-	public byte[] getSendData(ProtocolConfig proConfig) throws GenerateDataException
+	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> paramMap) throws GenerateDataException
 	{
 		Data data = new Data();
-		// TODO: 加入paramMap
-		return data.getSendData(proConfig, new HashMap<String, byte[]>(), new HashMap<String, byte[]>());
+		return data.getSendData(proConfig, new HashMap<String, byte[]>(), paramMap);
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class DataFactory
 	 * @date 2017年9月29日 下午6:36:05
 	 */
 	public static <T> List<ProtocolConfig> getDataConfig(String settingFilePath, List<T> entityList)
-			throws DocumentException, ParseXMLException
+			throws ParseXMLException
 	{
 		List<ProtocolConfig> proCfgList = null;
 		if (entityList.size() == 0)
@@ -183,7 +183,7 @@ public class DataFactory
 		XmlHelper dataXml = new XmlHelper();
 		dataXml.loadXml(settingFilePath);
 		ConfigHandler dataConfig = new ConfigHandler(dataXml);
-
+		
 		proCfgList = dataConfig.getProtocolConfigList(protocolList);
 		return proCfgList;
 	}

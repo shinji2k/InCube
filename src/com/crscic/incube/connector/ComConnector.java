@@ -331,18 +331,25 @@ public class ComConnector implements Connector
 		return isOpen;
 	}
 
-
 	@Override
 	public String getRemoteIp()
 	{
 		return "";
 	}
 
-
 	@Override
 	public String getLocalIp()
 	{
 		return "";
+	}
+
+	/* (non-Javadoc)
+	 * @see com.crscic.incube.connector.Connector#isServer()
+	 */
+	@Override
+	public boolean isServer()
+	{
+		return false;
 	}
 
 }

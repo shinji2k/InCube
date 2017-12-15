@@ -27,6 +27,7 @@ public class SocketConnector implements Connector
 	protected String type;
 	protected String ip;
 	protected int port;
+	protected boolean isServer = false;
 	protected boolean keepAlive;
 
 	protected Socket connector;
@@ -132,12 +133,20 @@ public class SocketConnector implements Connector
 		{
 			if (type.toLowerCase().equals("client"))
 			{
+				synchronized (this)
+				{
+					isServer = false;
+				}
 				Log.debug("开始连接服务: " + ip + ":" + port);
 				connector = new Socket(ip, port);
 				Log.debug("连接成功");
 			}
 			else
 			{
+				synchronized (this)
+				{
+					isServer = true;
+				}
 				Log.debug("启动服务:" + ip + ":" + port + " ...");
 				InetAddress inet = InetAddress.getByName(ip);
 				server = new ServerSocket(port, 5, inet);
@@ -171,6 +180,7 @@ public class SocketConnector implements Connector
 			{
 				// 如果是长连接的话，那么输入输出流应该是打开状态的，是否需要关闭一下呢？
 			}
+			isServer = false;
 
 		}
 		catch (IOException e)
@@ -199,5 +209,12 @@ public class SocketConnector implements Connector
 	public String getLocalIp()
 	{
 		return connector.getLocalAddress().toString().substring(1);
+	}
+
+
+	@Override
+	public boolean isServer()
+	{
+		return isServer;
 	}
 }

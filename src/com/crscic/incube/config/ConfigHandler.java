@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Attribute;
-import org.dom4j.DocumentException;
 import org.dom4j.Element;
 
 import com.crscic.incube.data.Data;
@@ -81,7 +80,7 @@ public class ConfigHandler
 			return false;
 	}
 	
-	public Map<String, Map<String, byte[]>> getParamInfo() throws DocumentException
+	public Map<String, Map<String, byte[]>> getParamInfo() throws ParseXMLException
 	{
 		Map<String, Map<String, byte[]>> paramInfoMapper = new HashMap<String, Map<String, byte[]>>();
 		// 是否多线程启动
@@ -89,11 +88,11 @@ public class ConfigHandler
 		{
 			String paramFile = getParamFilePath();
 			if (StringUtils.isNullOrEmpty(paramFile))
-				throw new DocumentException("多线程配置文件路径为空");
+				throw new ParseXMLException("多线程配置文件路径为空");
 			XmlHelper paramXml = new XmlHelper(paramFile);
 			List<Element> connEleList = paramXml.getElements("//connector");
 			if (connEleList.size() == 0)
-				throw new DocumentException("多线程配置文件中未发现有效的配置信息");
+				throw new ParseXMLException("多线程配置文件中未发现有效的配置信息");
 
 			for (Element connEle : connEleList)
 			{
@@ -372,20 +371,13 @@ public class ConfigHandler
 	{
 		Map<String, String> deviceInfo = null;
 		XmlHelper xml;
-		try
-		{
-			xml = new XmlHelper("config/deviceList.xml");
-			List<Element> deviceNodeList = xml.getElements("//device");
-			if (deviceNodeList.size() == 0)
-				return null;
-			deviceInfo = new HashMap<String, String>();
-			for (Element deviceNode : deviceNodeList)
-				deviceInfo.put(deviceNode.getTextTrim(), deviceNode.attributeValue("file"));
-		}
-		catch (DocumentException e)
-		{
-			Log.error("读取设备列表设置错误", e);
-		}
+		xml = new XmlHelper("config/deviceList.xml");
+		List<Element> deviceNodeList = xml.getElements("//device");
+		if (deviceNodeList.size() == 0)
+			return null;
+		deviceInfo = new HashMap<String, String>();
+		for (Element deviceNode : deviceNodeList)
+			deviceInfo.put(deviceNode.getTextTrim(), deviceNode.attributeValue("file"));
 		return deviceInfo;
 	}
 
