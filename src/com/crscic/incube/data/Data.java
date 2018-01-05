@@ -59,7 +59,7 @@ public class Data
 	 * @author zhaokai
 	 * @create 2017年12月1日 下午5:49:25
 	 */
-	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> quoteMap, Map<String, byte[]> paramMap)
+	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> quoteMap, Map<String, Map<String, String>> paramMap)
 			throws GenerateDataException
 	{
 		List<Part> partList = proConfig.getPart();
@@ -247,7 +247,7 @@ public class Data
 	 * @version 2017年3月1日 上午10:17:00
 	 * @throws AppException
 	 */
-	private byte[] getPartData(Part part, Map<String, byte[]> quoteMap, Map<String, byte[]> paramMap)
+	private byte[] getPartData(Part part, Map<String, byte[]> quoteMap, Map<String, Map<String, String>> paramMap)
 			throws GenerateDataException
 	{
 		String typeString = part.getType();
@@ -289,6 +289,7 @@ public class Data
 
 	/**
 	 * 根据外部参数返回生成的字段数据
+	 * 注：取type判断并生成数据的逻辑与getPartData()方法重复，但有差别。此处仅支持random关键字（目前），且先判断class的类型，再进行随机。随机方式支持“，”分隔（目前）
 	 * 
 	 * @param part
 	 *            字段信息
@@ -298,15 +299,23 @@ public class Data
 	 * @author zhaokai
 	 * @create 2017年12月1日 下午5:53:23
 	 */
-	private byte[] getParameterData(Part part, Map<String, byte[]> paramMap)
+	private byte[] getParameterData(Part part, Map<String, Map<String, String>> paramMap)
 	{
-		if (paramMap == null)
+		if (paramMap == null || paramMap.keySet().size() == 0)
 			return null;
 		String fieldName = part.getAttribute().get("name");
 		byte[] b = null;
 		if (paramMap.containsKey(fieldName))
 		{
-			b = paramMap.get(fieldName);
+			Map<String, String> paramAttrMap = paramMap.get(fieldName);
+			String value = null;
+			if (paramAttrMap.get("type").toLowerCase().trim().equals("aptotic"))
+				value = paramAttrMap.get("value");
+			else if (paramAttrMap.get("type").toLowerCase().trim().equals("random"))
+				value = getRandomData(paramAttrMap.get("value"));
+			else
+				value = paramAttrMap.get("value");
+			b = getByteArrayByClass(value, paramAttrMap.get("class"));
 		}
 		return b;
 	}
@@ -463,7 +472,7 @@ public class Data
 		return b;
 	}
 
-	private byte[] getGenerateData(Part part, Map<String, byte[]> quoteMap, Map<String, byte[]> paramMap)
+	private byte[] getGenerateData(Part part, Map<String, byte[]> quoteMap, Map<String, Map<String, String>> paramMap)
 			throws GenerateDataException
 	{
 		List<Part> childPartList = part.getChildNodeList();
@@ -579,6 +588,32 @@ public class Data
 		return b;
 	}
 
+	/**
+	 * 生成随机类型的数据（type=random）的简版
+	 * 支持随机方式列表：
+	 *  通过逗号分隔
+	 * @param value
+	 * @return
+	 * @author zhaokai
+	 * @create 2018年1月5日 下午4:57:08
+	 */
+	public static String getRandomData(String value)
+	{
+		String res = null;
+		if (value.indexOf(",") > -1)
+		{
+			String[] randomArray = value.split(",");
+			Random r = new Random();
+			int randomIndex = r.nextInt(randomArray.length);
+			res = randomArray[randomIndex];
+		}
+		else
+		{
+			res = value;
+		}
+		return res;
+	}
+	
 	/**
 	 * 设置需要补完时生成字段的参数缓存
 	 *

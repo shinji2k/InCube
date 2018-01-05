@@ -3,7 +3,10 @@ package com.crscic.incube.xmlhelper;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -66,10 +69,16 @@ public class XmlHelper
 		return childEleList;
 	}
 
-	public static List<Attribute> getAttributes(Element ele)
+	/**
+	 * 获得节点下属性值的列表
+	 * @param ele
+	 * @return
+	 * @author zhaokai
+	 * @create 2018年1月5日 下午4:39:45
+	 */
+	public static List<Attribute> getAttributesList(Element ele)
 	{
 		List<Attribute> attrList = new ArrayList<Attribute>();
-		;
 		List<?> attrObjList = ele.attributes();
 		if (attrObjList.size() > 0)
 		{
@@ -80,6 +89,30 @@ public class XmlHelper
 		return attrList;
 	}
 
+	/**
+	 * 获得节点下属性与值的Map
+	 * @param ele
+	 * @return
+	 * @author zhaokai
+	 * @create 2018年1月5日 下午4:40:04
+	 */
+	public static Map<String, String> getAttributesMap(Element ele)
+	{
+		Map<String, String> attrMap = new HashMap<String, String>();
+		
+		List<?> attrObjList = ele.attributes();
+		if (attrObjList.size() > 0)
+		{
+			for (int i = 0; i < attrObjList.size(); i++)
+			{
+				Attribute attr = (Attribute) attrObjList.get(i);
+				attrMap.put(attr.getName(), attr.getStringValue());
+			}
+		}
+		
+		return attrMap;
+	}
+	
 	/**
 	 * 将xml某节点下所有子节点自动填装。 要求：该节点下只有一级子节点，且填装类的属性与节点名称一致。 注意：暂不支持属性的填装
 	 * 

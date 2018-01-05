@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
-import com.crscic.incube.data.Data;
 import com.crscic.incube.data.Part;
 import com.crscic.incube.data.ProtocolConfig;
 import com.crscic.incube.exception.ParseXMLException;
@@ -82,16 +79,16 @@ public class ConfigHandler
 	}
 
 	/**
-	 * 解析param.xml文件中的内容。注：取type判断并生成数据的逻辑与Data中重复，但有差别。此处仅支持random关键字（目前），且先判断class的类型，再进行随机。随机方式支持“，”分隔（目前）
+	 * 解析param.xml文件中的内容。
 	 * 
-	 * @return
+	 * @return 第一个Map是connector节点与字段名map对应；第二个Map是字段名与属性map对应；第三Map个是属性与值对应
 	 * @throws ParseXMLException
 	 * @author zhaokai
 	 * @create 2018年1月5日 下午3:05:53
 	 */
-	public Map<String, Map<String, byte[]>> getParamInfo() throws ParseXMLException
+	public Map<String, Map<String, Map<String, String>>> getParamInfo() throws ParseXMLException
 	{
-		Map<String, Map<String, byte[]>> paramInfoMapper = new HashMap<String, Map<String, byte[]>>();
+		Map<String, Map<String, Map<String, String>>> paramInfoMapper = new HashMap<String, Map<String, Map<String, String>>>();
 		// 是否多线程启动
 		if (isMuti())
 		{
@@ -107,20 +104,10 @@ public class ConfigHandler
 			{
 				// 设置启动多线程服务使用的IP或Com号
 				List<Element> paramEleList = XmlHelper.getElements(connEle);
-				Map<String, byte[]> paramMapped = new HashMap<String, byte[]>();
+				Map<String, Map<String, String>> paramMapped = new HashMap<String, Map<String, String>>();
 				for (Element paramEle : paramEleList)
-				{
-					String value = null;
+					paramMapped.put(paramEle.getName(), XmlHelper.getAttributesMap(paramEle));
 
-					if (paramEle.attributeValue("type").trim().toLowerCase().equals("aptotic"))
-						value = paramEle.attributeValue("value");
-					else if (paramEle.attributeValue("type").trim().toLowerCase().equals("random"))
-						value = getRandomData(paramEle.attributeValue("value"));
-					else
-						value = paramEle.attributeValue("value");
-					paramMapped.put(paramEle.getName(),
-							Data.getByteArrayByClass(value, paramEle.attributeValue("class")));
-				}
 				paramInfoMapper.put(connEle.attributeValue("conf"), paramMapped);
 			}
 		}
@@ -133,19 +120,6 @@ public class ConfigHandler
 		}
 
 		return paramInfoMapper;
-	}
-	
-	private String getRandomData(String value)
-	{
-		String res = null;
-		if (value.indexOf(",") > -1)
-		{
-			String[] randomArray = value.split(",");
-			Random r = new Random();
-			int randomIndex = r.nextInt(randomArray.length);
-			res = randomArray[randomIndex];
-		}
-		return res;
 	}
 
 	/**
@@ -354,7 +328,7 @@ public class ConfigHandler
 			Part part = new Part();
 			// 设置节点属性
 			Map<String, String> attrMap = null;
-			List<Attribute> attrList = XmlHelper.getAttributes(partEle);
+			List<Attribute> attrList = XmlHelper.getAttributesList(partEle);
 			if (attrList.size() > 0)
 			{
 				attrMap = new HashMap<String, String>();

@@ -43,7 +43,7 @@ public class DataFactory
 	 * @throws ParseXMLException 
 	 * @create 2017年12月13日 下午5:46:44
 	 */
-	public Map<String, Map<String, byte[]>> getConnParam() throws ParseXMLException
+	public Map<String, Map<String, Map<String, String>>> getConnParam() throws ParseXMLException
 	{
 		if (setting == null)
 			setting = new ConfigHandler(configXml);
@@ -134,7 +134,7 @@ public class DataFactory
 	 * @author zhaokai 2017年9月12日 下午12:38:22
 	 * @throws GenerateDataException
 	 */
-	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> paramMap) throws GenerateDataException
+	public byte[] getSendData(ProtocolConfig proConfig, Map<String, Map<String, String>> paramMap) throws GenerateDataException
 	{
 		Data data = new Data();
 		return data.getSendData(proConfig, new HashMap<String, byte[]>(), paramMap);
