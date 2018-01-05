@@ -9,11 +9,25 @@ import org.slf4j.LoggerFactory;
  */
 public class Log
 {
-	private static final Logger logger = LoggerFactory.getLogger(Log.class);
+	
+	private static <T>  Logger getLogger()
+	{
+		Throwable t = new Throwable();
+//		返回调用类的名称
+		String className = t.getStackTrace()[2].getClassName();
+		Class<?> c = null;
+		try {
+			c = Class.forName(className);
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException("Failed to create Log instance!",e);
+		}
+		
+		return LoggerFactory.getLogger(c);
+	}
 
 	public static void debug(String log)
 	{
-		logger.debug(log);
+		getLogger().debug(log);
 	}
 
 	/**
@@ -24,7 +38,7 @@ public class Log
 	 */
 	public static void info(String log)
 	{
-		logger.info(log);
+		getLogger().info(log);
 	}
 
 	/**
@@ -36,7 +50,7 @@ public class Log
 	 */
 	public static void error(String log, Exception e)
 	{
-		logger.error(log, e);
+		getLogger().error(log, e);
 	}
 
 	/**
@@ -47,7 +61,7 @@ public class Log
 	 */
 	public static void error(String log)
 	{
-		logger.error(log);
+		getLogger().error(log);
 	}
 
 	/**
@@ -58,7 +72,7 @@ public class Log
 	 */
 	public static void warn(String log)
 	{
-		logger.warn(log);
+		getLogger().warn(log);
 	}
 
 	/**
@@ -69,6 +83,6 @@ public class Log
 	 */
 	public static void lengthWarning(String nodaName)
 	{
-		logger.warn(nodaName + "节点生成数据的长度与配置中不一致");
+		getLogger().warn(nodaName + "节点生成数据的长度与配置中不一致");
 	}
 }

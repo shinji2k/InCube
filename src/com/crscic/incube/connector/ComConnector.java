@@ -343,13 +343,17 @@ public class ComConnector implements Connector
 		return "";
 	}
 
-	/* (non-Javadoc)
-	 * @see com.crscic.incube.connector.Connector#isServer()
-	 */
 	@Override
 	public boolean isServer()
 	{
 		return false;
+	}
+	
+
+	@Override
+	public String getType()
+	{
+		return "com";
 	}
 
 }

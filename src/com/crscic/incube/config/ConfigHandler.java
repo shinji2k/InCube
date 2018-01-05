@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.dom4j.Attribute;
 import org.dom4j.Element;
@@ -34,37 +35,37 @@ public class ConfigHandler
 	public InterChangeSetting getInterChangeSetting()
 	{
 		// 发送重试次数与超时时间
-				Element interChangeSettingEle = xml.getSingleElement("/root/interchange");
-				if (interChangeSettingEle == null)
-					return null;
-				InterChangeSetting interChangeSetting = new InterChangeSetting();
+		Element interChangeSettingEle = xml.getSingleElement("/root/interchange");
+		if (interChangeSettingEle == null)
+			return null;
+		InterChangeSetting interChangeSetting = new InterChangeSetting();
 
-				// 协议文件路径
-				interChangeSetting.setFile(interChangeSettingEle.attributeValue("file"));
+		// 协议文件路径
+		interChangeSetting.setFile(interChangeSettingEle.attributeValue("file"));
 
-				// 请求列表，有多个请求
-				List<Element> requestEleList = XmlHelper.getElements(interChangeSettingEle);
-				List<Request> requestList = new ArrayList<Request>();
-				for (Element requestEle : requestEleList)
-				{
-					Request request = new Request();
-					request.setTimeout(requestEle.attributeValue("timeout"));
-					request.setRetry(requestEle.attributeValue("retry"));
-					request.setSendProtocol(requestEle.elementTextTrim("pro"));
+		// 请求列表，有多个请求
+		List<Element> requestEleList = XmlHelper.getElements(interChangeSettingEle);
+		List<Request> requestList = new ArrayList<Request>();
+		for (Element requestEle : requestEleList)
+		{
+			Request request = new Request();
+			request.setTimeout(requestEle.attributeValue("timeout"));
+			request.setRetry(requestEle.attributeValue("retry"));
+			request.setSendProtocol(requestEle.elementTextTrim("pro"));
 
-					// 回复信息
-					Element respEle = requestEle.element("response");
-					Response response = getResponse(respEle);
-					
-					request.setResponse(response);
-					requestList.add(request);
-				}
+			// 回复信息
+			Element respEle = requestEle.element("response");
+			Response response = getResponse(respEle);
 
-				interChangeSetting.setRequest(requestList);
+			request.setResponse(response);
+			requestList.add(request);
+		}
 
-				return interChangeSetting;
+		interChangeSetting.setRequest(requestList);
+
+		return interChangeSetting;
 	}
-	
+
 	/**
 	 * 是否多线程模式
 	 * 
@@ -79,7 +80,15 @@ public class ConfigHandler
 		else
 			return false;
 	}
-	
+
+	/**
+	 * 解析param.xml文件中的内容。注：取type判断并生成数据的逻辑与Data中重复，但有差别。此处仅支持random关键字（目前），且先判断class的类型，再进行随机。随机方式支持“，”分隔（目前）
+	 * 
+	 * @return
+	 * @throws ParseXMLException
+	 * @author zhaokai
+	 * @create 2018年1月5日 下午3:05:53
+	 */
 	public Map<String, Map<String, byte[]>> getParamInfo() throws ParseXMLException
 	{
 		Map<String, Map<String, byte[]>> paramInfoMapper = new HashMap<String, Map<String, byte[]>>();
@@ -100,8 +109,18 @@ public class ConfigHandler
 				List<Element> paramEleList = XmlHelper.getElements(connEle);
 				Map<String, byte[]> paramMapped = new HashMap<String, byte[]>();
 				for (Element paramEle : paramEleList)
-					paramMapped.put(paramEle.getName(), Data.getByteArrayByClass(paramEle.attributeValue("value"),
-							paramEle.attributeValue("class")));
+				{
+					String value = null;
+
+					if (paramEle.attributeValue("type").trim().toLowerCase().equals("aptotic"))
+						value = paramEle.attributeValue("value");
+					else if (paramEle.attributeValue("type").trim().toLowerCase().equals("random"))
+						value = getRandomData(paramEle.attributeValue("value"));
+					else
+						value = paramEle.attributeValue("value");
+					paramMapped.put(paramEle.getName(),
+							Data.getByteArrayByClass(value, paramEle.attributeValue("class")));
+				}
 				paramInfoMapper.put(connEle.attributeValue("conf"), paramMapped);
 			}
 		}
@@ -112,10 +131,23 @@ public class ConfigHandler
 			else
 				paramInfoMapper.put(xml.getSingleElement("/root/socket/ip").getStringValue(), null);
 		}
-		
+
 		return paramInfoMapper;
 	}
 	
+	private String getRandomData(String value)
+	{
+		String res = null;
+		if (value.indexOf(",") > -1)
+		{
+			String[] randomArray = value.split(",");
+			Random r = new Random();
+			int randomIndex = r.nextInt(randomArray.length);
+			res = randomArray[randomIndex];
+		}
+		return res;
+	}
+
 	/**
 	 * 获取解析相关设置信息
 	 * 
@@ -143,7 +175,7 @@ public class ConfigHandler
 			// 回复信息
 			Element respEle = requestNode.element("response");
 			Response response = getResponse(respEle);
-			
+
 			request.setResponse(response);
 			requestList.add(request);
 		}
@@ -157,12 +189,12 @@ public class ConfigHandler
 	{
 		return xml.getSingleElement("/root/config/paramFile").getStringValue();
 	}
-	
+
 	public String getMuti()
 	{
 		return xml.getSingleElement("/root/config/muti").getStringValue();
 	}
-	
+
 	public String getConnectType()
 	{
 		return xml.getSingleElement("/root/config/type").getStringValue();
@@ -184,7 +216,7 @@ public class ConfigHandler
 	 * 返回发送协议设置信息
 	 * 
 	 * @return
-	 * @author zhaokai 
+	 * @author zhaokai
 	 * @create 2017年9月27日 下午11:15:07
 	 */
 	public SendSetting getSendSetting()
@@ -251,7 +283,8 @@ public class ConfigHandler
 			Log.debug("    请求的报文尾：" + (StringUtils.isNullOrEmpty(response.getTail()) ? "无" : response.getTail()));
 			if (response.getQuoteInfo() != null && response.getQuoteInfo().keySet().size() > 0)
 				for (String quoteField : response.getQuoteInfo().keySet())
-					Log.debug("    响应消息中的" + quoteField + "字段使用请求中第" + response.getQuotePosString(quoteField) + "字节中的内容");
+					Log.debug(
+							"    响应消息中的" + quoteField + "字段使用请求中第" + response.getQuotePosString(quoteField) + "字节中的内容");
 		}
 		replySetting.setResponseList(responseList);
 		if (nullReply)
@@ -383,6 +416,7 @@ public class ConfigHandler
 
 	/**
 	 * response节点内容注入
+	 * 
 	 * @param respEle
 	 * @return
 	 * @author ken_8
@@ -407,7 +441,7 @@ public class ConfigHandler
 					response.setQuoteInfo(quoteField.attributeValue("name"), quoteField.getTextTrim());
 			}
 		}
-		
+
 		return response;
 	}
 }

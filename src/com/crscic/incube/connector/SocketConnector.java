@@ -104,17 +104,15 @@ public class SocketConnector implements Connector
 		{
 			is = connector.getInputStream();
 			recvData = new ArrayList<Byte>();
-			int len = 0;
-			while ((len = is.available()) > 0)
-			{
+			int len = 1024;
+//			while ((len = is.available()) > 0)
+//			{
 				// 虽然几率较低，但仍有可能在从while的条件判断到read之间有新的数据进来，造成少取了数据
 				byte[] buff = new byte[len];
-				if (-1 != is.read(buff, 0, len))
-					CollectionUtils.copyArrayToList(recvData, buff);
-			}
-			// if (recvData.size() != 0)
-			// Log.debug("接收 in connector：" +
-			// ByteUtils.byteToHexString(recvData));
+				int recvLen = is.read(buff, 0, len);
+				if (recvLen != -1)
+					CollectionUtils.copyArrayToList(recvData, buff, recvLen);
+//			}
 		}
 		catch (IOException e)
 		{
@@ -216,5 +214,13 @@ public class SocketConnector implements Connector
 	public boolean isServer()
 	{
 		return isServer;
+	}
+
+
+
+	@Override
+	public String getType()
+	{
+		return "socket";
 	}
 }

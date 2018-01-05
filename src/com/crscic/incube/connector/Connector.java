@@ -44,4 +44,6 @@ public interface Connector
 	
 	public boolean isServer();
 	
+	public String getType();
+	
 }
