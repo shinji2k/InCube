@@ -28,9 +28,8 @@ public class Encryption
 		byte[] result = new byte[4];
 		// 计算每一字节的和
 		for (byte b : src)
-		{
 			check += (b & 0xff);
-		}
+		
 		// 把和对65535求余数 取反 加1
 		check = ~(check % 65536) + 1;
 		// 把最后的结果分为四字节的ascii码

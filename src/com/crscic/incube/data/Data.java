@@ -34,7 +34,7 @@ public class Data
 	private int fileRandomMem = 0;
 	private int fileLength = 0;
 	private List<PartMem> partMem; // 缓存需要补完的字段信息
-	// private Map<String, byte[]> quoteMap; // 缓存需要从请求中引用数据的字段和使用的数据
+	private Map<String, Boolean> lastIdxMap; //上次发送的随机时使用的数组下标
 
 	public Data()
 	{
@@ -59,8 +59,8 @@ public class Data
 	 * @author zhaokai
 	 * @create 2017年12月1日 下午5:49:25
 	 */
-	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> quoteMap, Map<String, Map<String, String>> paramMap)
-			throws GenerateDataException
+	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> quoteMap,
+			Map<String, Map<String, String>> paramMap) throws GenerateDataException
 	{
 		List<Part> partList = proConfig.getPart();
 
@@ -312,7 +312,7 @@ public class Data
 			if (paramAttrMap.get("type").toLowerCase().trim().equals("aptotic"))
 				value = paramAttrMap.get("value");
 			else if (paramAttrMap.get("type").toLowerCase().trim().equals("random"))
-				value = getRandomData(paramAttrMap.get("value"));
+				value = getRandomData(fieldName, paramAttrMap.get("value"));
 			else
 				value = paramAttrMap.get("value");
 			b = getByteArrayByClass(value, paramAttrMap.get("class"));
@@ -589,23 +589,34 @@ public class Data
 	}
 
 	/**
-	 * 生成随机类型的数据（type=random）的简版
-	 * 支持随机方式列表：
-	 *  通过逗号分隔
+	 * 生成随机类型的数据（type=random）的简版 支持随机方式列表： 通过逗号分隔
+	 * 10%几率切换使用第1和第2个值；
+	 * 暂时不支持大于两个值的情况（说白了只支持告警量随机）
 	 * @param value
 	 * @return
 	 * @author zhaokai
 	 * @create 2018年1月5日 下午4:57:08
 	 */
-	public static String getRandomData(String value)
+	public String getRandomData(String fieldName, String value)
 	{
 		String res = null;
 		if (value.indexOf(",") > -1)
 		{
+			if (lastIdxMap == null)
+				lastIdxMap = new HashMap<String, Boolean>();
+			if (!lastIdxMap.containsKey(fieldName))
+				lastIdxMap.put(fieldName, false);
 			String[] randomArray = value.split(",");
-			Random r = new Random();
-			int randomIndex = r.nextInt(randomArray.length);
-			res = randomArray[randomIndex];
+			int random = (int) (Math.random() * 100 + 1);
+			if (random < 11)
+				lastIdxMap.put(fieldName, !(lastIdxMap.get(fieldName)));
+			if (lastIdxMap.get(fieldName))
+				res = randomArray[1];
+			else
+				res = randomArray[0];
+//			Random r = new Random();
+//			int randomIndex = r.nextInt(randomArray.length);
+//			res = randomArray[randomIndex];
 		}
 		else
 		{
@@ -613,7 +624,7 @@ public class Data
 		}
 		return res;
 	}
-	
+
 	/**
 	 * 设置需要补完时生成字段的参数缓存
 	 *
@@ -762,7 +773,7 @@ public class Data
 			StringBuilder fatherIdStr = new StringBuilder();
 			for (int i = 0; i < parts.length; i++)
 				fatherIdStr.append(parts[i] + ".");
-			
+
 			fatherIdStr = fatherIdStr.deleteCharAt(fatherIdStr.length() - 1);
 			b = ByteUtils.scadaIdToBytes(fatherIdStr.toString());
 		}
@@ -772,7 +783,7 @@ public class Data
 		}
 		return b;
 	}
-	
+
 	/**
 	 * 长度不足时填充指定字节补足长度
 	 *

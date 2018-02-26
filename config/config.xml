@@ -62,4 +62,10 @@
 			<quote/>
 		</response>
 	</reply>
+	
+	<pair>
+		<device file="config\device\air-condition\parseConfig.xml">测试空调1</device>
+		<device file="config\device\air-condition\parseConfig2.xml">测试空调2</device>
+		<device file="config\device\air-condition\parseConfig3.xml">测试空调2</device>
+	</pair>
 </root>
