@@ -40,7 +40,7 @@ public class DataFactory
 	 * @return
 	 * @throws DocumentException
 	 * @author zhaokai
-	 * @throws ParseXMLException 
+	 * @throws ParseXMLException
 	 * @create 2017年12月13日 下午5:46:44
 	 */
 	public Map<String, Map<String, Map<String, String>>> getConnParam() throws ParseXMLException
@@ -79,7 +79,12 @@ public class DataFactory
 		{
 			SocketSetting sockSetting = setting.getSocketConfig();
 			if (!StringUtils.isNullOrEmpty(connConf))
-				sockSetting.setIp(connConf);
+			{
+				if (sockSetting.getType().equals("server"))
+					sockSetting.setIp(connConf);
+				else
+					sockSetting.setLocalIp(connConf);
+			}
 			connector = new SocketConnector(sockSetting);
 		}
 		else if (setting.getConnectType().toLowerCase().equals("com"))
@@ -134,7 +139,8 @@ public class DataFactory
 	 * @author zhaokai 2017年9月12日 下午12:38:22
 	 * @throws GenerateDataException
 	 */
-	public byte[] getSendData(ProtocolConfig proConfig, Map<String, Map<String, String>> paramMap) throws GenerateDataException
+	public byte[] getSendData(ProtocolConfig proConfig, Map<String, Map<String, String>> paramMap)
+			throws GenerateDataException
 	{
 		Data data = new Data();
 		return data.getSendData(proConfig, new HashMap<String, byte[]>(), paramMap);
@@ -183,7 +189,7 @@ public class DataFactory
 		XmlHelper dataXml = new XmlHelper();
 		dataXml.loadXml(settingFilePath);
 		ConfigHandler dataConfig = new ConfigHandler(dataXml);
-		
+
 		proCfgList = dataConfig.getProtocolConfigList(protocolList);
 		return proCfgList;
 	}

@@ -12,7 +12,9 @@ public class SocketSetting
 {
 	private String type;
 	private String ip;
+	private String localIp;
 	private String port;
+	private String localPort;
 	private boolean keepAlive;
 
 	public String getType()
@@ -65,4 +67,25 @@ public class SocketSetting
 			this.keepAlive = false;
 			
 	}
+
+	public String getLocalIp()
+	{
+		return localIp;
+	}
+
+	public void setLocalIp(String localIp)
+	{
+		this.localIp = localIp;
+	}
+
+	public String getLocalPort()
+	{
+		return localPort;
+	}
+
+	public void setLocalPort(String localPort)
+	{
+		this.localPort = localPort;
+	}
+
 }

@@ -15,6 +15,16 @@ public class ReplySetting
 	private String settingFilePath;
 	private List<Response> responseList;
 	
+	public Response findResponseByProtocolName(String proName)
+	{
+		for (Response response : responseList)
+		{
+			if (response.getProtocol().equals(proName))
+				return response;
+		}
+		return null;
+	}
+	
 	/**
 	 * @return the settingFilePath
 	 */

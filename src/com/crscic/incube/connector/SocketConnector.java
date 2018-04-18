@@ -12,11 +12,13 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.crscic.incube.exception.ConnectException;
 import com.crscic.incube.log.Log;
 import com.crscic.incube.config.SocketSetting;
 import com.k.util.CollectionUtils;
+import com.k.util.StringUtils;
 
 /**
  * 
@@ -26,7 +28,9 @@ public class SocketConnector implements Connector
 {
 	protected String type;
 	protected String ip;
+	protected String localIp;
 	protected int port;
+	protected int localPort;
 	protected boolean isServer = false;
 	protected boolean keepAlive;
 
@@ -37,14 +41,37 @@ public class SocketConnector implements Connector
 	{
 		this.type = sockCfg.getType();
 		this.ip = sockCfg.getIp();
+		if (StringUtils.isNullOrEmpty(sockCfg.getLocalIp()))
+		{
+			try
+			{
+				InetAddress inet= InetAddress.getLocalHost();
+				this.localIp = inet.getHostAddress();
+			}
+			catch (UnknownHostException e)
+			{
+				Log.error("获取本地Ip地址出错", e);
+			}
+		}
+		else
+		{
+			this.localIp = sockCfg.getLocalIp();
+		}
+		
 		this.port = Integer.parseInt(sockCfg.getPort());
+		if (sockCfg.getLocalPort() == null || sockCfg.getLocalPort().equals(""))
+			this.localPort = new Random().nextInt(55534) + 10000;
+		else
+			this.localPort = Integer.parseInt(sockCfg.getLocalPort());
+
 		this.keepAlive = sockCfg.getKeepAlive();
 
 		String logInfo;
 		if (this.type.equals("server"))
 			logInfo = "监听端口：" + this.port + ", 连接方式：" + (this.keepAlive ? "长连接" : "短连接");
 		else
-			logInfo = "服务器IP：" + this.ip + ", 服务器端口：" + this.port + ", 连接方式：" + (this.keepAlive ? "长连接" : "短连接");
+			logInfo = "服务器IP：" + this.ip + ", 服务器端口：" + this.port + ", 本地IP：" + this.localIp + "，本地端口：" + this.localPort
+					+ "，连接方式：" + (this.keepAlive ? "长连接" : "短连接");
 
 		Log.debug("接口类型为Socket-" + this.type + ", " + logInfo);
 	}
@@ -105,14 +132,14 @@ public class SocketConnector implements Connector
 			is = connector.getInputStream();
 			recvData = new ArrayList<Byte>();
 			int len = 1024;
-//			while ((len = is.available()) > 0)
-//			{
-				// 虽然几率较低，但仍有可能在从while的条件判断到read之间有新的数据进来，造成少取了数据
-				byte[] buff = new byte[len];
-				int recvLen = is.read(buff, 0, len);
-				if (recvLen != -1)
-					CollectionUtils.copyArrayToList(recvData, buff, recvLen);
-//			}
+			// while ((len = is.available()) > 0)
+			// {
+			// 虽然几率较低，但仍有可能在从while的条件判断到read之间有新的数据进来，造成少取了数据
+			byte[] buff = new byte[len];
+			int recvLen = is.read(buff, 0, len);
+			if (recvLen != -1)
+				CollectionUtils.copyArrayToList(recvData, buff, recvLen);
+			// }
 		}
 		catch (IOException e)
 		{
@@ -135,8 +162,17 @@ public class SocketConnector implements Connector
 				{
 					isServer = false;
 				}
-				Log.debug("开始连接服务: " + ip + ":" + port);
-				connector = new Socket(ip, port);
+
+				Log.debug("使用IP地址：" + this.localIp + ", 开始连接服务: " + ip + ":" + port);
+				if (this.localIp == null || this.localIp.equals(""))
+				{
+					connector = new Socket(ip, port);
+				}
+				else
+				{
+					InetAddress inet = InetAddress.getByName(this.localIp);
+					connector = new Socket(ip, port, inet, this.localPort);
+				}
 				Log.debug("连接成功");
 			}
 			else
@@ -153,7 +189,9 @@ public class SocketConnector implements Connector
 				Log.debug("连接客户端：" + connector.getRemoteSocketAddress().toString().substring(1));
 			}
 		}
-		catch (UnknownHostException e)
+		catch (
+
+		UnknownHostException e)
 		{
 			Log.error("错误的主机地址", e);
 			throw new ConnectException();
@@ -179,6 +217,8 @@ public class SocketConnector implements Connector
 				// 如果是长连接的话，那么输入输出流应该是打开状态的，是否需要关闭一下呢？
 			}
 			isServer = false;
+			connector = null;
+			server = null;
 
 		}
 		catch (IOException e)
@@ -209,14 +249,11 @@ public class SocketConnector implements Connector
 		return connector.getLocalAddress().toString().substring(1);
 	}
 
-
 	@Override
 	public boolean isServer()
 	{
 		return isServer;
 	}
-
-
 
 	@Override
 	public String getType()

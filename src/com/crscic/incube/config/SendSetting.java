@@ -17,6 +17,17 @@ public class SendSetting
 	private Map<String, Long> protocolMap; 
 	private List<String> protocolList;
 	
+	public String findPortocolByName(String proName)
+	{
+		for (String pro : protocolList)
+		{
+			if (pro.equals(proName))
+				return pro;
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * @return the settingFilePath
 	 */
