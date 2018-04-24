@@ -16,6 +16,16 @@ public class ConnectException extends Exception
 {
 	private static final long serialVersionUID = -3319490080953863019L;
 
+	public ConnectException(String msg)
+	{
+		super(msg);
+	}
+	
+	public ConnectException()
+	{
+		super();
+	}
+	
 	public static void throwWriteErr(IOException e) throws ConnectException
 	{
 		Log.error("写入数据失败", e);

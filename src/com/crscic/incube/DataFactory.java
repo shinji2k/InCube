@@ -9,7 +9,7 @@ import org.dom4j.DocumentException;
 
 import com.crscic.incube.connector.ComConnector;
 import com.crscic.incube.connector.Connector;
-import com.crscic.incube.connector.SocketConnector;
+import com.crscic.incube.connector.TcpConnector;
 import com.crscic.incube.data.Data;
 import com.crscic.incube.data.ProtocolConfig;
 import com.crscic.incube.exception.GenerateDataException;
@@ -85,7 +85,7 @@ public class DataFactory
 				else
 					sockSetting.setLocalIp(connConf);
 			}
-			connector = new SocketConnector(sockSetting);
+			connector = new TcpConnector(sockSetting);
 		}
 		else if (setting.getConnectType().toLowerCase().equals("com"))
 		{

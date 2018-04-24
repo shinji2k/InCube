@@ -21,6 +21,8 @@ public interface Connector
 	 * 
 	 * zhaokai
 	 * 2017年9月10日 下午2:12:34
+	 * @throws UnknownHostException 
+	 * @throws IOException 
 	 */
 	public void send(byte[] data) throws ConnectException;
 	public List<Byte> receive();

@@ -24,7 +24,7 @@ import com.k.util.StringUtils;
  * 
  * @author zhaokai 2017年9月7日 下午3:12:32
  */
-public class SocketConnector implements Connector
+public class TcpConnector implements Connector
 {
 	protected String type;
 	protected String ip;
@@ -37,7 +37,7 @@ public class SocketConnector implements Connector
 	protected Socket connector;
 	protected ServerSocket server;
 
-	public SocketConnector(SocketSetting sockCfg)
+	public TcpConnector(SocketSetting sockCfg)
 	{
 		this.type = sockCfg.getType();
 		this.ip = sockCfg.getIp();
