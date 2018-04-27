@@ -5,8 +5,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -68,8 +66,8 @@ public class UdpConnector implements Connector
 			recvData = new ArrayList<Byte>();
 			int len = 1024;
 			byte[] buff = new byte[len];
-            DatagramPacket recePacket = new DatagramPacket(buff, buff.length);
-            udpConnector.receive(recePacket);//根据receive方法说明，当接收数据长度超过数组长度时，整个消息将被弃用
+			DatagramPacket recePacket = new DatagramPacket(buff, buff.length);
+			udpConnector.receive(recePacket);// 根据receive方法说明，当接收数据长度超过数组长度时，整个消息将被弃用
 			CollectionUtils.copyArrayToList(recvData, buff, recePacket.getLength());
 			// }
 		}
@@ -90,7 +88,7 @@ public class UdpConnector implements Connector
 				closeConnect();
 				udpConnector = null;
 			}
-			
+
 			if (type.toLowerCase().equals("client"))
 			{
 				synchronized (this)
@@ -137,76 +135,49 @@ public class UdpConnector implements Connector
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.crscic.incube.connector.Connector#isOpen()
-	 */
 	@Override
 	public boolean isOpen()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		if (udpConnector == null || udpConnector.isClosed())
+			return false;
+		return true;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.crscic.incube.connector.Connector#closeConnect()
-	 */
 	@Override
 	public void closeConnect() throws ConnectException
 	{
-		// TODO Auto-generated method stub
-
+		if (udpConnector != null)
+			udpConnector.close();
+		if (keepAlive)
+		{
+			// 如果是长连接的话，那么输入输出流应该是打开状态的，是否需要关闭一下呢？
+		}
+		isServer = false;
+		udpConnector = null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.crscic.incube.connector.Connector#getRemoteIp()
-	 */
 	@Override
 	public String getRemoteIp()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return udpConnector.getRemoteSocketAddress().toString().substring(1);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.crscic.incube.connector.Connector#getLocalIp()
-	 */
 	@Override
 	public String getLocalIp()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return localIp;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.crscic.incube.connector.Connector#isServer()
-	 */
 	@Override
 	public boolean isServer()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		return isServer;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.crscic.incube.connector.Connector#getType()
-	 */
 	@Override
 	public String getType()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return "udp";
 	}
 
 	public UdpConnector(SocketSetting sockCfg)

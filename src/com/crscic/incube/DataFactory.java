@@ -10,6 +10,7 @@ import org.dom4j.DocumentException;
 import com.crscic.incube.connector.ComConnector;
 import com.crscic.incube.connector.Connector;
 import com.crscic.incube.connector.TcpConnector;
+import com.crscic.incube.connector.UdpConnector;
 import com.crscic.incube.data.Data;
 import com.crscic.incube.data.ProtocolConfig;
 import com.crscic.incube.exception.GenerateDataException;
@@ -75,7 +76,7 @@ public class DataFactory
 	{
 		if (setting == null)
 			setting = new ConfigHandler(configXml);
-		if (setting.getConnectType().toLowerCase().equals("socket"))
+		if (setting.getConnectType().toLowerCase().equals("tcp"))
 		{
 			SocketSetting sockSetting = setting.getSocketConfig();
 			if (!StringUtils.isNullOrEmpty(connConf))
@@ -93,6 +94,18 @@ public class DataFactory
 			if (!StringUtils.isNullOrEmpty(connConf))
 				comSetting.setPort(connConf);
 			connector = ComConnector.getInstance(comSetting);
+		}
+		else if (setting.getConnectType().toLowerCase().equals("udp"))
+		{
+			SocketSetting sockSetting = setting.getSocketConfig();
+			if (!StringUtils.isNullOrEmpty(connConf))
+			{
+				if (sockSetting.getType().equals("server"))
+					sockSetting.setIp(connConf);
+				else
+					sockSetting.setLocalIp(connConf);
+			}
+			connector = new UdpConnector(sockSetting);
 		}
 
 		return connector;

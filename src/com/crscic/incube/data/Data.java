@@ -777,6 +777,12 @@ public class Data
 			fatherIdStr = fatherIdStr.deleteCharAt(fatherIdStr.length() - 1);
 			b = ByteUtils.scadaIdToBytes(fatherIdStr.toString());
 		}
+		else if (classString.toLowerCase().equals("int8"))
+		{
+			int srcInt = Integer.parseInt(src);
+			b = new byte[1];
+			b[0] = ByteUtils.getBytes(srcInt)[3] ;
+		}
 		else
 		{
 			b = ByteUtils.getBytes(src);

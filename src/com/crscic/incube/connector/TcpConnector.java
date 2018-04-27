@@ -258,6 +258,6 @@ public class TcpConnector implements Connector
 	@Override
 	public String getType()
 	{
-		return "socket";
+		return "tcp";
 	}
 }
