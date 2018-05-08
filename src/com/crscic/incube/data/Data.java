@@ -34,7 +34,7 @@ public class Data
 	private int fileRandomMem = 0;
 	private int fileLength = 0;
 	private List<PartMem> partMem; // 缓存需要补完的字段信息
-	private Map<String, Boolean> lastIdxMap; //上次发送的随机时使用的数组下标
+	private Map<String, byte[]> lastRandomByteMap;// 所有part上次发送的随机值
 
 	public Data()
 	{
@@ -43,6 +43,7 @@ public class Data
 		Random r = new Random();
 		fileRandomMem = r.nextInt(500) % (499) + 1;
 		partMem = new ArrayList<PartMem>();
+		lastRandomByteMap = new HashMap<String, byte[]>();
 	}
 
 	/**
@@ -308,14 +309,29 @@ public class Data
 		if (paramMap.containsKey(fieldName))
 		{
 			Map<String, String> paramAttrMap = paramMap.get(fieldName);
-			String value = null;
 			if (paramAttrMap.get("type").toLowerCase().trim().equals("aptotic"))
-				value = paramAttrMap.get("value");
+				b = getByteArrayByClass(paramAttrMap.get("value"), paramAttrMap.get("class"));
 			else if (paramAttrMap.get("type").toLowerCase().trim().equals("random"))
-				value = getRandomData(fieldName, paramAttrMap.get("value"));
+			{
+				// 组装一个临时part
+				Part tempRandomPart = new Part();
+				Map<String, String> tempAttribute = new HashMap<String, String>();
+				tempAttribute.put("name", part.getAttribute().get("name"));
+				tempRandomPart.setAttribute(tempAttribute);
+				tempRandomPart.setType(paramAttrMap.get("type"));
+				tempRandomPart.setValue(paramAttrMap.get("value"));
+				tempRandomPart.setValueClass(paramAttrMap.get("class"));
+				tempRandomPart.setLen(part.getLen());
+				tempRandomPart.setSplit(part.getSplit());
+				tempRandomPart.setFillByte(part.getFillByte());
+				tempRandomPart.setFillDirection(part.getFillDirection());
+				tempRandomPart.setPercent(Integer.parseInt(paramAttrMap.get("percent")));
+
+				b = getRandomData(tempRandomPart);
+			}
 			else
-				value = paramAttrMap.get("value");
-			b = getByteArrayByClass(value, paramAttrMap.get("class"));
+				b = getByteArrayByClass(paramAttrMap.get("value"), paramAttrMap.get("class"));
+
 		}
 		return b;
 	}
@@ -541,6 +557,16 @@ public class Data
 	 */
 	private byte[] getRandomData(Part part)
 	{
+		// partname可能存在重复的情况，但目前在random中未出现，暂未处理该情况
+		String partName = part.getAttribute().get("name");
+		if (lastRandomByteMap.containsKey(partName))
+		{
+			int random = (int) (Math.random() * 100 + 1);
+			if (random > part.getPercent())
+			{
+				return lastRandomByteMap.get(partName);
+			}
+		}
 		String valueString = part.getValue();
 		// split节点
 		String splitString = part.getSplit();
@@ -551,78 +577,49 @@ public class Data
 		String[] randomArray = valueString.split(splitString);
 		Random r = new Random();
 		String res = null;
-		// 不同的随机方式
-		if (splitString.equals(","))
-		{
-			int randomIndex = r.nextInt(randomArray.length);
-			res = randomArray[randomIndex];
-		}
-		else if (splitString.equals("-"))
-		{
-			int min = Integer.parseInt(randomArray[0]);
-			int max = Integer.parseInt(randomArray[1]);
-			int random = r.nextInt(max) % (max - min + 1) + min;
-			res = Integer.toString(random);
-		}
-
 		byte[] b = null;
-		// class节点，先取得随机数后在判断class
-		String classString = part.getValueClass();
-		b = getByteArrayByClass(res, classString);
-		// 长度校验
 		int len = 0;
-		String lenString = part.getLen();
-		if (!StringUtils.isNullOrEmpty(lenString))
-			len = Integer.parseInt(lenString);
 
-		// 检查有没有配置fill-byte，若配置了则说明需要填充
-		String fillByteString = part.getFillByte();
-		if (!StringUtils.isNullOrEmpty(fillByteString))
+		while (true)
 		{
-			String fillDirectionString = part.getFillDirection();
-			b = doFill(b, fillByteString, fillDirectionString, len);
-		}
+			// 不同的随机方式
+			if (splitString.equals(","))
+			{
+				int randomIndex = r.nextInt(randomArray.length);
+				res = randomArray[randomIndex];
+			}
+			else if (splitString.equals("-"))
+			{
+				int min = Integer.parseInt(randomArray[0]);
+				int max = Integer.parseInt(randomArray[1]);
+				int random = r.nextInt(max) % (max - min + 1) + min;
+				res = Integer.toString(random);
+			}
+			// class节点，先取得随机数后在判断class
+			String classString = part.getValueClass();
+			b = getByteArrayByClass(res, classString);
+			// 长度校验
+			String lenString = part.getLen();
+			if (!StringUtils.isNullOrEmpty(lenString))
+				len = Integer.parseInt(lenString);
 
+			// 检查有没有配置fill-byte，若配置了则说明需要填充
+			String fillByteString = part.getFillByte();
+			if (!StringUtils.isNullOrEmpty(fillByteString))
+			{
+				String fillDirectionString = part.getFillDirection();
+				b = doFill(b, fillByteString, fillDirectionString, len);
+			}
+			if (!CollectionUtils.isSameArray(b, lastRandomByteMap.get(partName)))
+			{
+				break;
+			}
+			b = null;
+		}
+		lastRandomByteMap.put(partName, b);
 		if (len > 0 && (b.length != len || b.length > len))
 			Log.lengthWarning(part.getAttribute().get("name"));
 		return b;
-	}
-
-	/**
-	 * 生成随机类型的数据（type=random）的简版 支持随机方式列表： 通过逗号分隔
-	 * 10%几率切换使用第1和第2个值；
-	 * 暂时不支持大于两个值的情况（说白了只支持告警量随机）
-	 * @param value
-	 * @return
-	 * @author zhaokai
-	 * @create 2018年1月5日 下午4:57:08
-	 */
-	public String getRandomData(String fieldName, String value)
-	{
-		String res = null;
-		if (value.indexOf(",") > -1)
-		{
-			if (lastIdxMap == null)
-				lastIdxMap = new HashMap<String, Boolean>();
-			if (!lastIdxMap.containsKey(fieldName))
-				lastIdxMap.put(fieldName, false);
-			String[] randomArray = value.split(",");
-			int random = (int) (Math.random() * 100 + 1);
-			if (random < 11)
-				lastIdxMap.put(fieldName, !(lastIdxMap.get(fieldName)));
-			if (lastIdxMap.get(fieldName))
-				res = randomArray[1];
-			else
-				res = randomArray[0];
-//			Random r = new Random();
-//			int randomIndex = r.nextInt(randomArray.length);
-//			res = randomArray[randomIndex];
-		}
-		else
-		{
-			res = value;
-		}
-		return res;
 	}
 
 	/**

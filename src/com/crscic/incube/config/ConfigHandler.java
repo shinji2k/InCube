@@ -339,6 +339,9 @@ public class ConfigHandler
 
 			// 类型
 			part.setType(partEle.element("type").getTextTrim());
+			// 随机类型的百分比
+			part.setPercent(partEle.element("percent") == null ? null
+					: Integer.parseInt(partEle.element("percent").getTextTrim()));
 			// 分隔符
 			part.setSplit(partEle.element("split") == null ? null : partEle.element("split").getTextTrim());
 			// 补全字节

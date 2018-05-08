@@ -8,13 +8,14 @@ import java.util.Map;
 
 /**
  * 
- * @author ken_8
- * 2017年9月10日 下午11:50:07
+ * @author ken_8 2017年9月10日 下午11:50:07
  */
 public class Part
 {
 	private String type;
 	private String value;
+	private int percent;
+
 	private String split;
 	/**
 	 * "fill-byte"
@@ -29,7 +30,7 @@ public class Part
 	 */
 	private String valueClass;
 	private String len;
-	
+
 	private List<Part> childNodeList;
 	private Map<String, String> attribute;
 
@@ -42,7 +43,8 @@ public class Part
 	}
 
 	/**
-	 * @param type the type to set
+	 * @param type
+	 *            the type to set
 	 */
 	public void setType(String type)
 	{
@@ -58,11 +60,32 @@ public class Part
 	}
 
 	/**
-	 * @param value the value to set
+	 * @param value
+	 *            the value to set
 	 */
 	public void setValue(String value)
 	{
 		this.value = value;
+	}
+
+	/**
+	 * @return the percent
+	 */
+	public int getPercent()
+	{
+		return percent;
+	}
+
+	/**
+	 * @param percent
+	 *            the percent to set
+	 */
+	public void setPercent(Integer percent)
+	{
+		if (percent == null)
+			this.percent = 100;
+		else
+			this.percent = percent;
 	}
 
 	/**
@@ -74,7 +97,8 @@ public class Part
 	}
 
 	/**
-	 * @param split the split to set
+	 * @param split
+	 *            the split to set
 	 */
 	public void setSplit(String split)
 	{
@@ -90,7 +114,8 @@ public class Part
 	}
 
 	/**
-	 * @param fillByte the fillByte to set
+	 * @param fillByte
+	 *            the fillByte to set
 	 */
 	public void setFillByte(String fillByte)
 	{
@@ -106,7 +131,8 @@ public class Part
 	}
 
 	/**
-	 * @param fillDirection the fillDirection to set
+	 * @param fillDirection
+	 *            the fillDirection to set
 	 */
 	public void setFillDirection(String fillDirection)
 	{
@@ -122,7 +148,8 @@ public class Part
 	}
 
 	/**
-	 * @param valueClass the valueClass to set
+	 * @param valueClass
+	 *            the valueClass to set
 	 */
 	public void setValueClass(String valueClass)
 	{
@@ -138,7 +165,8 @@ public class Part
 	}
 
 	/**
-	 * @param len the len to set
+	 * @param len
+	 *            the len to set
 	 */
 	public void setLen(String len)
 	{
@@ -154,7 +182,8 @@ public class Part
 	}
 
 	/**
-	 * @param childNode the childNode to set
+	 * @param childNode
+	 *            the childNode to set
 	 */
 	public void setChildNodeList(List<Part> childNodeList)
 	{
@@ -170,7 +199,8 @@ public class Part
 	}
 
 	/**
-	 * @param attribute the attribute to set
+	 * @param attribute
+	 *            the attribute to set
 	 */
 	public void setAttribute(Map<String, String> attribute)
 	{
