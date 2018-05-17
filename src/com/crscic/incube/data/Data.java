@@ -561,7 +561,7 @@ public class Data
 		String partName = part.getAttribute().get("name");
 		if (lastRandomByteMap.containsKey(partName))
 		{
-			int random = (int) (Math.random() * 100 + 1);
+			int random = (int) (Math.random() * 1000 + 1);
 			if (random > part.getPercent())
 			{
 				return lastRandomByteMap.get(partName);
@@ -610,6 +610,7 @@ public class Data
 				String fillDirectionString = part.getFillDirection();
 				b = doFill(b, fillByteString, fillDirectionString, len);
 			}
+			// 与上次发送的匹配是否相同，若相同则再次随机直到不同为止
 			if (!CollectionUtils.isSameArray(b, lastRandomByteMap.get(partName)))
 			{
 				break;
@@ -778,7 +779,7 @@ public class Data
 		{
 			int srcInt = Integer.parseInt(src);
 			b = new byte[1];
-			b[0] = ByteUtils.getBytes(srcInt)[3] ;
+			b[0] = ByteUtils.getBytes(srcInt)[3];
 		}
 		else
 		{

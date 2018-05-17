@@ -83,7 +83,7 @@ public class Part
 	public void setPercent(Integer percent)
 	{
 		if (percent == null)
-			this.percent = 100;
+			this.percent = 1000;
 		else
 			this.percent = percent;
 	}
