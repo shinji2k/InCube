@@ -16,7 +16,7 @@ import java.util.Random;
 
 import com.crscic.incube.exception.ConnectException;
 import com.crscic.incube.log.Log;
-import com.crscic.incube.config.SocketSetting;
+import com.crscic.incube.setting.SocketSetting;
 import com.k.util.CollectionUtils;
 import com.k.util.StringUtils;
 
@@ -183,7 +183,7 @@ public class TcpConnector implements Connector
 				}
 				Log.debug("启动服务:" + ip + ":" + port + " ...");
 				InetAddress inet = InetAddress.getByName(ip);
-				server = new ServerSocket(port, 5, inet);
+				server = new ServerSocket(port, 255, inet);
 				Log.debug("等待客户端连接...");
 				connector = server.accept(); // 不确定当离开这个方法后，server会不会销毁
 				Log.debug("连接客户端：" + connector.getRemoteSocketAddress().toString().substring(1));

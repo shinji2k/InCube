@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
 	<protocols desc="这个列表提供配置文件中配置的协议列表方便查看，程序并不会使用">
-		<pro desc="实时数据响应-402">real-time</pro>
-		<pro desc="登录响应">login-response</pro>
+		<pro desc="实时数据响应-402 ">real-time</pro>
+		<pro desc="登录响应-102">login-response</pro>
+		<pro desc="心跳响应-1202">heartbeat-resp</pro>
+		<pro des="设置告警上报方式响应-502">setAlarm-resp</pro>
+		<pro des="获取告警历史响应-902">alarmHistory-resp</pro>
+		<pro desc="请求节点以下的整个树ID响应-202">getNodes-resp</pro>
+		<pro desc="请求数据属性响应-302">getProperty-resp</pro>
+		<!-- 模拟综合网管发送协议 -->
+		<pro desc="登录请求">login-req</pro>    
 	</protocols>
 
 	<real-time>
@@ -17,7 +24,7 @@
 			<value>
 				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
 					<type>length</type>
-					<value>length,serials_no,pk_type,cnt,id,enum_state,content</value>
+					<value>length,serials_no,pkType,content</value>
 					<split>,</split>
 					<fill-byte></fill-byte>
 					<fill-direction></fill-direction>
@@ -29,21 +36,9 @@
 			<len>4</len>
 		</part>
 		<part name="serials_no" desc="序列号">
-			<type>increase</type>
-			<value>
-				<part name="increase" desc="节点自增需要的信息">
-					<type>increase</type>
-					<!-- 由 1 开始-->
-					<value>1</value>
-					<!-- 每次加 1 -->
-					<split>1</split>
-					<fill-byte></fill-byte>
-					<fill-direction></fill-direction>
-					<class>int</class>
-					<len>4</len>
-				</part>
-			</value>
-			<class>int</class>
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
 			<len>4</len>
 		</part>
 		<part name="pkType" desc="类型定义，402实时数据回复信息">
@@ -52,14 +47,2978 @@
 			<class>byte</class>
 			<len>4</len>
 		</part>
+		<part name="content" desc="业务数据内容">
+			<type>generate</type>
+			<value>
+				<part name="gourpId" desc="组ID">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="result" desc="查询结果">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="count" desc="监测点数量">
+					<type>aptotic</type>
+					<value>00000015</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="infraredType" desc="红外的设备类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="infraredId" desc="红外的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="infraredValue" desc="红外的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<!-- 与动环的实际实现一致，DI为1字节。与铁标不符，铁标要求4字节 -->
+				<!-- 背景：铁科过CRCC时使用瑞尔的系统测得，瑞尔就是这么实现的，也就是说，有可能瑞尔的就是错的 -->
+				<part name="infraredStatus" desc="红外的告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorType" desc="烟感的设备类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorId" desc="烟感的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorValue" desc="烟感的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="smokeDetectorStatus" desc="烟感的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="doorType" desc="门磁的设备类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="doorId" desc="门磁的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="doorValue" desc="门磁的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="doorStatus" desc="门磁的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="temperatureType" desc="温度的设备类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="temperatureId" desc="温度的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="temperatureValue" desc="温度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="temperatureStatus" desc="温度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="humidityType" desc="湿度的设备类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="humidityId" desc="湿度的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="humidityValue" desc="湿度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="humidityStatus" desc="湿度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAType" desc="告警量A相电压类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAId" desc="告警量A相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAValue" desc="告警量A相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="voltageDIAStatus" desc="告警量A相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBType" desc="告警量B相电压类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBId" desc="告警量B相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBValue" desc="告警量B相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="voltageDIBStatus" desc="告警量B相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICType" desc="告警量C相电压类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICId" desc="告警量C相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICValue" desc="告警量C相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="voltageDICStatus" desc="告警量C相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIAType" desc="告警量A相电流类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIAId" desc="告警量A相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIAValue" desc="告警量A相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="electricityDIAStatus" desc="告警量A相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBType" desc="告警量B相电流类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBId" desc="告警量B相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBValue" desc="告警量B相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="electricityDIBStatus" desc="告警量B相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICType" desc="告警量C相电流类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICId" desc="告警量C相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICValue" desc="告警量C相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="electricityDICStatus" desc="告警量C相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIType" desc="告警量回风温度类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIId" desc="告警量回风温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIValue" desc="告警量回风温度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="returnAirTemperatureDIStatus" desc="告警量回风温度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIType" desc="告警量回风湿度类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIId" desc="告警量回风湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIValue" desc="告警量回风湿度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="returnAirHumidityDIStatus" desc="告警量回风湿度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAType" desc="模拟量A相电压类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAId" desc="模拟量A相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAValue" desc="模拟量A相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAStatus" desc="模拟量A相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBType" desc="模拟量B相电压类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBId" desc="模拟量B相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBValue" desc="模拟量B相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBStatus" desc="模拟量B相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICType" desc="模拟量C相电压类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICId" desc="模拟量C相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICValue" desc="模拟量C相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICStatus" desc="模拟量C相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAType" desc="模拟量A相电流类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAId" desc="模拟量A相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAValue" desc="模拟量A相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAStatus" desc="模拟量A相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBType" desc="模拟量B相电流类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBId" desc="模拟量B相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBValue" desc="模拟量B相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBStatus" desc="模拟量B相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICType" desc="模拟量C相电流类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICId" desc="模拟量C相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICValue" desc="模拟量C相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICStatus" desc="模拟量C相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIType" desc="模拟量回风温度类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIId" desc="模拟量回风温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIValue" desc="模拟量回风温度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIStatus" desc="模拟量回风温度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIType" desc="模拟量回风湿度类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIId" desc="模拟量回风湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIValue" desc="模拟量回风湿度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIStatus" desc="模拟量回风湿度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len></len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content
+					</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
 	</real-time>
 
-	<login-response>
-		<part name="102" desc="登录响应信息全部数据作为固定字段回复">
+	<getNodes-resp desc="返回树结构-202">
+		<part name="head" desc="数据包头">
 			<type>aptotic</type>
-			<value>23646c686a74787879230000004800023cfd0000006561646d696e202020202020202020202020202020202020202020202020202020202020202020202061646d696e2020202020202020202020202020208b96</value>
+			<value>23646C686A7478787923</value>
 			<class>byte</class>
-			<len>84</len>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>000000ca</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="content" desc="业务数据内容">
+			<type>generate</type>
+			<value>
+				<part name="count" desc="监测点数量">
+					<type>aptotic</type>
+					<value>00000018</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="suId" desc="监测单元ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="stationId" desc="监测站ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="suId" desc="监测单元ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="infraredId" desc="红外ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorId" desc="烟感ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="doorId" desc="门磁ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="temperatureId" desc="温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="humidityId" desc="湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<!-- 新增空调部分数据，8个模拟量，8个告警量-->
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="suId" desc="监测单元ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAId" desc="告警量A相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBId" desc="告警量B相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICId" desc="告警量C相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+			    <part name="electricityDIAId" desc="告警量A相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBId" desc="告警量B相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICId" desc="告警量C相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIId" desc="告警量回风温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIId" desc="告警量回风湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAId" desc="模拟量A相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBId" desc="模拟量B相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICId" desc="模拟量C相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+			    <part name="electricityAIAId" desc="模拟量A相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBId" desc="模拟量B相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICId" desc="模拟量C相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIId" desc="模拟量回风温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIId" desc="模拟量回风湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+		 	</value>
+			<class></class>
+			<len>4</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content
+					</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</getNodes-resp>
+
+	<getProperty-resp desc="返回数据属性-302">
+		<part name="head" desc="数据包头">
+			<type>aptotic</type>
+			<value>23646C686A7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，302数据属性回复信息">
+			<type>aptotic</type>
+			<value>0000012e</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="content" desc="数据属性内容">
+			<type>generate</type>
+			<value>
+				<part name="count" desc="监测点数量">
+					<type>aptotic</type>
+					<value>00000018</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 监测单元信息 -->
+				<part name="suType" desc="类型-0=站">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="suId" desc="监测单元ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="stationId" desc="监测单元父ID（即监控站ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="suName" desc="监测单元名称">
+					<type>aptotic</type>
+					<value>c4b3d5be</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="suDesc" desc="监测单元描述">
+					<type>aptotic</type>
+					<value>c4b3cfdf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="lonAndLat" desc="经度和纬度">
+					<type>aptotic</type>
+					<value>41f0000041f00000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 环境信息文件夹 -->
+				<part name="envFolderType" desc="类型-1=设备">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="suId" desc="父ID（即监控单元ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderName" desc="环境信息文件夹名称">
+					<type>aptotic</type>
+					<value>bbb7beb3d0c5cfa2</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="envFolderDesc" desc="环境信息文件夹描述">
+					<type>aptotic</type>
+					<value>bbb7beb3d0c5cfa2</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="deviceType" desc="设备类型-14:环境设备">
+					<type>aptotic</type>
+					<value>0000000e</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="productor" desc="生产厂家描述">
+					<type>aptotic</type>
+					<value>d6d0b9facda8bac5</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="version" desc="版本描述">
+					<type>aptotic</type>
+					<value>56372e302e382e323063</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="beginRunTime" desc="投入运行时间">
+					<type>aptotic</type>
+					<value>07d00202082723</value>
+					<class>byte</class>
+					<len>7</len>
+				</part>
+				<!-- 红外 -->
+				<part name="infraredType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="infraredId" desc="红外ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="父ID（即环境文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="infraredName" desc="红外监测点名称">
+					<type>aptotic</type>
+					<value>baeccde2</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="infraredDesc" desc="红外描述">
+					<type>aptotic</type>
+					<value>baeccde2c8ebc7d6b4abb8d0c6f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 烟感 -->
+				<part name="smokeDetectorType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorId" desc="烟感ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="父ID（即环境文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorName" desc="烟感名称">
+					<type>aptotic</type>
+					<value>d1ccb8d0</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="smokeDetectorDesc" desc="烟感描述">
+					<type>aptotic</type>
+					<value>d1ccb8d0b4abb8d0c6f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 门磁 -->
+				<part name="doorType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="doorId" desc="门磁ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="父ID（即环境文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="doorName" desc="门磁名称">
+					<type>aptotic</type>
+					<value>c3c5b4c5</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="doorDesc" desc="门磁描述">
+					<type>aptotic</type>
+					<value>c3c5b4c5b4abb8d0c6f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 温度 -->
+				<part name="temperatureType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="temperatureId" desc="温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="父ID（即环境文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="temperatureName" desc="温度名称">
+					<type>aptotic</type>
+					<value>cec2b6c8</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="temperatureDesc" desc="温度描述">
+					<type>aptotic</type>
+					<value>cec2b6c8b4abb8d0c6f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>4248000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>417000004170000041700000417000004170000041700000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>41c800003c23d70a</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>a1e6202020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 湿度 -->
+				<part name="humidityType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="humidityId" desc="湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="父ID（即环境文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="humidityName" desc="湿度名称">
+					<type>aptotic</type>
+					<value>caaab6c8</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="humidityDesc" desc="湿度描述">
+					<type>aptotic</type>
+					<value>caaab6c8b4abb8d0c6f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>42c8000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>417000004170000041700000417000004170000041700000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>424800003ca3d70a</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>2552482020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 海信特种空调文件夹 -->
+				<part name="airConditionFolderType" desc="类型-1=设备">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="海信特种空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="suId" desc="父ID（即监控单元ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderName" desc="海信特种空调文件夹名称">
+					<type>aptotic</type>
+					<value>baa3d0c5ccd8d6d6bfd5b5f72831333633d0add2e929</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="airConditionFolderDesc" desc="海信特种空调文件夹描述">
+					<type>aptotic</type>
+					<value>b4aebfda323abaa3d0c5ccd8d6d6bfd5b5f72831333633d0add2e929</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="deviceType" desc="设备类型-11:海信特种空调">
+					<type>aptotic</type>
+					<value>0000000b</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="productor" desc="生产厂家描述">
+					<type>aptotic</type>
+					<value>b9b2d3d031cca8c9e8b1b8</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="version" desc="版本描述">
+					<type>aptotic</type>
+					<value>b5dad2bbb8f6c9e8b1b8b5d8d6b7ceaa30</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="beginRunTime" desc="投入运行时间">
+					<type>aptotic</type>
+					<value>07d0020f16101a</value>
+					<class>byte</class>
+					<len>7</len>
+				</part>
+				<!-- 海信特种空调-A相电压-告警 -->
+				<part name="voltageDIAType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAId" desc="A相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAName" desc="A相电压名称">
+					<type>aptotic</type>
+					<value>41cfe0b5e7d1b9</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="voltageDIADesc" desc="A相电压描述">
+					<type>aptotic</type>
+					<value>b4aebfda32b8e6beafc1bfcae4c8eb303031</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 海信特种空调-B相电压-告警 -->
+				<part name="voltageDIBType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBId" desc="B相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBName" desc="B相电压名称">
+					<type>aptotic</type>
+					<value>42cfe0b5e7d1b9</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="voltageDIBDesc" desc="B相电压描述">
+					<type>aptotic</type>
+					<value>b4aebfda32b8e6beafc1bfcae4c8eb303032</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 海信特种空调-C相电压-告警 -->
+				<part name="voltageDICType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICId" desc="C相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICName" desc="C相电压名称">
+					<type>aptotic</type>
+					<value>43cfe0b5e7d1b9</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="voltageDICDesc" desc="C相电压描述">
+					<type>aptotic</type>
+					<value>b4aebfda32b8e6beafc1bfcae4c8eb303033</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 海信特种空调-A相电流-告警 -->
+				<part name="electricityDIAType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIAId" desc="A相电流ID">.
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIAName" desc="A相电流名称">
+					<type>aptotic</type>
+					<value>41cfe0b5e7c1f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="electricityDIADesc" desc="A相电流描述">
+					<type>aptotic</type>
+					<value>b4aebfda32b8e6beafc1bfcae4c8eb303034</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 海信特种空调-B相电流-告警 -->
+				<part name="electricityDIBType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBId" desc="B相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBName" desc="B相电流名称">
+					<type>aptotic</type>
+					<value>42cfe0b5e7c1f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="electricityDIBDesc" desc="B相电流描述">
+					<type>aptotic</type>
+					<value>b4aebfda32b8e6beafc1bfcae4c8eb303035</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 海信特种空调-C相电流-告警 -->
+				<part name="electricityDICType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICId" desc="C相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICName" desc="C相电流名称">
+					<type>aptotic</type>
+					<value>43cfe0b5e7c1f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="electricityDICDesc" desc="C相电流描述">
+					<type>aptotic</type>
+					<value>b4aebfda32b8e6beafc1bfcae4c8eb303036</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 海信特种空调-回风温度-告警 -->
+				<part name="returnAirTemperatureDIType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIId" desc="回风温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIName" desc="回风温度名称">
+					<type>aptotic</type>
+					<value>bbd8b7e7cec2b6c8</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="returnAirTemperatureDIDesc" desc="回风温度描述">
+					<type>aptotic</type>
+					<value>b4aebfda32b8e6beafc1bfcae4c8eb303037</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 海信特种空调-回风湿度-告警 -->
+				<part name="returnAirHumidityDIType" desc="类型-2=DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIId" desc="回风湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIName" desc="回风湿度名称">
+					<type>aptotic</type>
+					<value>bbd8b7e7caaab6c8</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="returnAirHumidityDIDesc" desc="回风湿度描述">
+					<type>aptotic</type>
+					<value>b4aebfda32b8e6beafc1bfcae4c8eb303038</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="alarmThresbhold" desc="告警触发阀值">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="desc0" desc="数字为0时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="desc1" desc="数字为1时的描述">
+					<type>aptotic</type>
+					<value>b8e6beaf</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!-- 海信特种空调-A相电压-模拟量 -->
+				<part name="voltageAIAType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAId" desc="A相电压-模拟量ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAName" desc="A相电压-模拟量名称">
+					<type>aptotic</type>
+					<value>41cfe0b5e7d1b9</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="voltageAIADesc" desc="A相电压-模拟量描述">
+					<type>aptotic</type>
+					<value>b4aebfda32c4a3c4e2c1bfcae4c8eb303031</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>0000000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>000000000000000000000000000000000000000000000000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>000000003a83126f</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>5620202020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 海信特种空调-B相电压-模拟量 -->
+				<part name="voltageAIBType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBId" desc="B相电压-模拟量ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBName" desc="B相电压-模拟量名称">
+					<type>aptotic</type>
+					<value>42cfe0b5e7d1b9</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="voltageAIBDesc" desc="B相电压-模拟量描述">
+					<type>aptotic</type>
+					<value>b4aebfda32c4a3c4e2c1bfcae4c8eb303032</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>0000000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>000000000000000000000000000000000000000000000000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>000000003a83126f</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>5620202020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 海信特种空调-C相电压-模拟量 -->
+				<part name="voltageAICType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICId" desc="C相电压-模拟量ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICName" desc="C相电压-模拟量名称">
+					<type>aptotic</type>
+					<value>43cfe0b5e7d1b9</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="voltageAICDesc" desc="C相电压-模拟量描述">
+					<type>aptotic</type>
+					<value>b4aebfda32c4a3c4e2c1bfcae4c8eb303033</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>0000000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>000000000000000000000000000000000000000000000000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>000000003a83126f</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>5620202020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 海信特种空调-A相电流-模拟量 -->
+				<part name="electricityAIAType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAId" desc="A相电流-模拟量ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAName" desc="A相电流-模拟量名称">
+					<type>aptotic</type>
+					<value>41cfe0b5e7c1f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="electricityAIADesc" desc="A相电流-模拟量描述">
+					<type>aptotic</type>
+					<value>b4aebfda32c4a3c4e2c1bfcae4c8eb303034</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>0000000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>000000000000000000000000000000000000000000000000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>000000003dcccccd</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>4120202020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 海信特种空调-B相电流-模拟量 -->
+				<part name="electricityAIBType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBId" desc="B相电流-模拟量ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBName" desc="B相电流-模拟量名称">
+					<type>aptotic</type>
+					<value>42cfe0b5e7c1f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="electricityAIBDesc" desc="B相电流-模拟量描述">
+					<type>aptotic</type>
+					<value>b4aebfda32c4a3c4e2c1bfcae4c8eb303035</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>0000000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>000000000000000000000000000000000000000000000000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>000000003dcccccd</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>4120202020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 海信特种空调-C相电流-模拟量 -->
+				<part name="electricityAICType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICId" desc="C相电流-模拟量ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICName" desc="C相电流-模拟量名称">
+					<type>aptotic</type>
+					<value>43cfe0b5e7c1f7</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="electricityAICDesc" desc="C相电流-模拟量描述">
+					<type>aptotic</type>
+					<value>b4aebfda32c4a3c4e2c1bfcae4c8eb303036</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>0000000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>000000000000000000000000000000000000000000000000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>000000003dcccccd</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>4120202020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 海信特种空调-回风温度-模拟量 -->
+				<part name="returnAirTemperatureAIType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIId" desc="回风温度-模拟量ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIName" desc="回风温度-模拟量名称">
+					<type>aptotic</type>
+					<value>bbd8b7e7cec2b6c8</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="returnAirTemperatureAIDesc" desc="回风温度-模拟量描述">
+					<type>aptotic</type>
+					<value>b4aebfda32c4a3c4e2c1bfcae4c8eb303038</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>0000000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>000000000000000000000000000000000000000000000000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>000000003dcccccd</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>a1e6202020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<!-- 海信特种空调-回风湿度-模拟量 -->
+				<part name="returnAirHumidityAIType" desc="类型-3=AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIId" desc="回风湿度-模拟量ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="父ID（海信特种空调文件夹ID）">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIName" desc="回风湿度-模拟量名称">
+					<type>aptotic</type>
+					<value>bbd8b7e7caaab6c8</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>40</len>
+				</part>
+				<part name="returnAirHumidityAIDesc" desc="回风湿度-模拟量描述">
+					<type>aptotic</type>
+					<value>b4aebfda32c4a3c4e2c1bfcae4c8eb303130</value>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>byte</class>
+					<len>160</len>
+				</part>
+				<part name="maxAndMinVal" desc="有效上、下限">
+					<type>aptotic</type>
+					<value>0000000000000000</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="alarmLevel" desc="告警等级">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="alarmEnable" desc="告警使能">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="hiAndLoLimit" desc="1级告警上下限、2级告警上下限、3级告警上下限">
+					<type>aptotic</type>
+					<value>000000000000000000000000000000000000000000000000</value>
+					<class>byte</class>
+					<len>24</len>
+				</part>
+				<part name="standerAndPercision" desc="标称值、精度">
+					<type>aptotic</type>
+					<value>000000003dcccccd</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+				<part name="saved" desc="是否保存">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="unit" desc="单位">
+					<type>aptotic</type>
+					<value>2520202020202020</value>
+					<class>byte</class>
+					<len>8</len>
+				</part>
+			</value>
+			<class></class>
+			<len>4</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content
+					</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</getProperty-resp>
+
+	<login-response desc="登录响应信息全部数据作为固定字段回复-102">
+		<part name="head" desc="头">
+			<type>aptotic</type>
+			<value>23646c686a7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>00000066</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="content">
+			<type>aptotic</type>
+			<value>00000002</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content
+					</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
 		</part>
 	</login-response>
+
+	<heartbeat-resp desc="心跳响应信息全部数据作为固定字段回复-1202">
+		<part name="head" desc="头">
+			<type>aptotic</type>
+			<value>23646c686a7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>000004b2</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType
+					</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</heartbeat-resp>
+
+	<setAlarm-resp desc="设置告警上报方式响应信息全部数据作为固定字段回复-502">
+		<part name="head" desc="头">
+			<type>aptotic</type>
+			<value>23646c686a7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>000001f6</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="content">
+			<type>aptotic</type>
+			<value>0000000000000001</value>
+			<class>byte</class>
+			<len>8</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</setAlarm-resp>
+
+	<alarmHistory-resp desc="获取告警历史响应信息全部数据作为固定字段回复-902">
+		<part name="902" >
+			<type>aptotic</type>
+			<value>23646c686a7478787923000000100002fe100000038600000000abc3
+			</value>
+			<class>byte</class>
+			<len>28</len>
+		</part>
+	</alarmHistory-resp>
+
+	<!-- 模拟综合网管发送协议 -->
+	<login-req>
+		<part name="head" desc="头">
+			<type>aptotic</type>
+			<value>23646c686a7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="len_sn_pk" desc="长度+sn+pk">
+			<type>aptotic</type>
+			<value>0000004800023cfd00000065</value>
+			<class>byte</class>
+			<len>12</len>
+		</part>
+		<part name="content" desc="内容，用户名+密码">
+			<type>generate</type>
+			<value>
+				<part name="username" desc="用户名">
+					<type>aptotic</type>
+					<value>inm</value>
+					<split></split>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>asc</class>
+					<len>40</len>
+				</part>
+				<part name="password" desc="密码">
+					<type>aptotic</type>
+					<value>inm</value>
+					<split></split>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>asc</class>
+					<len>20</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len></len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>len_sn_pk,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</login-req>
 </root>

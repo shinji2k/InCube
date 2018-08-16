@@ -1,6 +1,8 @@
-package com.crscic.incube.config;
+package com.crscic.incube.setting;
 
 import java.util.List;
+
+import com.crscic.incube.config.Request;
 
 /**
  * 

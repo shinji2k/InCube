@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<type>
+		<name>byte</name>
+		<class>com.crscic.incube.classparser.ByteParser</class>
+	</type>
+	<type>
+		<name>asc</name>
+		<class>com.crscic.incube.classparser.AscParser</class>
+	</type>
+	<type>
+		<name>float</name>
+		<class>com.crscic.incube.classparser.FloatParser</class>
+	</type>
+	<type>
+		<name>hextobyte</name>
+		<class>com.crscic.incube.classparser.HexToByteParser</class>
+	</type>
+	<type>
+		<name>hextoasc</name>
+		<class>com.crscic.incube.classparser.HexToAscParser</class>
+	</type>
+	<type>
+		<name>inttobytetoasc</name>
+		<class>com.crscic.incube.classparser.IntToByteToAscParser</class>
+	</type>
+	<type>
+		<name>inttohextobyte</name>
+		<class>com.crscic.incube.classparser.IntToHexToByteParser</class>
+	</type>
+	<type>
+		<name>int</name>
+		<class>com.crscic.incube.classparser.IntParser</class>
+	</type>
+	<type>
+		<name>scadaid</name>
+		<class>com.crscic.incube.classparser.ScadaIdParser</class>
+	</type>
+	<type>
+		<name>scadafatherid</name>
+		<class>com.crscic.incube.classparser.ScadaFatherIdParser</class>
+	</type>
+	<type>
+		<name>int8</name>
+		<class>com.crscic.incube.classparser.Int8Parser</class>
+	</type>
+</root>

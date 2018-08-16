@@ -11,6 +11,11 @@ import com.crscic.incube.data.Part;
 import com.crscic.incube.data.ProtocolConfig;
 import com.crscic.incube.exception.ParseXMLException;
 import com.crscic.incube.log.Log;
+import com.crscic.incube.setting.ComSetting;
+import com.crscic.incube.setting.InterChangeSetting;
+import com.crscic.incube.setting.ReplySetting;
+import com.crscic.incube.setting.SendSetting;
+import com.crscic.incube.setting.SocketSetting;
 import com.crscic.incube.xmlhelper.XmlHelper;
 import com.k.util.StringUtils;
 

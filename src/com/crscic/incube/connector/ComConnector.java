@@ -13,7 +13,7 @@ import java.util.TooManyListenersException;
 
 import com.crscic.incube.exception.ConnectException;
 import com.crscic.incube.log.Log;
-import com.crscic.incube.config.ComSetting;
+import com.crscic.incube.setting.ComSetting;
 import com.k.util.ByteUtils;
 import com.k.util.CollectionUtils;
 

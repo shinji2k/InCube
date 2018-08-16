@@ -1,5 +1,7 @@
 package com.crscic.incube.data;
 
+import com.crscic.incube.setting.Setting;
+
 /**
  * @author zhaokai
  *
@@ -7,6 +9,17 @@ package com.crscic.incube.data;
  */
 public class ParseData extends Data
 {
+
+	/**
+	 * @param setting
+	 * zhaokai
+	 * 2018年8月14日 下午6:26:14
+	 */
+	public ParseData(Setting setting)
+	{
+		super(setting);
+		// TODO Auto-generated constructor stub
+	}
 	//TODO:
 	/**
 	 * 1.拿到解析报文的配置文件

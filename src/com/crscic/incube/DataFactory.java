@@ -7,6 +7,10 @@ import java.util.Map;
 
 import org.dom4j.DocumentException;
 
+import com.crscic.incube.config.ConfigHandler;
+import com.crscic.incube.config.ParseSetting;
+import com.crscic.incube.config.Request;
+import com.crscic.incube.config.Response;
 import com.crscic.incube.connector.ComConnector;
 import com.crscic.incube.connector.Connector;
 import com.crscic.incube.connector.TcpConnector;
@@ -16,24 +20,37 @@ import com.crscic.incube.data.ProtocolConfig;
 import com.crscic.incube.exception.GenerateDataException;
 import com.crscic.incube.exception.ParseXMLException;
 import com.crscic.incube.log.Log;
+import com.crscic.incube.setting.ComSetting;
+import com.crscic.incube.setting.InterChangeSetting;
+import com.crscic.incube.setting.ReplySetting;
+import com.crscic.incube.setting.SendSetting;
+import com.crscic.incube.setting.Setting;
+import com.crscic.incube.setting.SettingHandler;
+import com.crscic.incube.setting.SocketSetting;
 import com.crscic.incube.xmlhelper.XmlHelper;
-import com.crscic.incube.config.ComSetting;
-import com.crscic.incube.config.ConfigHandler;
-import com.crscic.incube.config.InterChangeSetting;
-import com.crscic.incube.config.ParseSetting;
-import com.crscic.incube.config.ReplySetting;
-import com.crscic.incube.config.Request;
-import com.crscic.incube.config.Response;
-import com.crscic.incube.config.SendSetting;
-import com.crscic.incube.config.SocketSetting;
 import com.k.util.StringUtils;
 
 public class DataFactory
 {
-	private static ConfigHandler setting;
+	private static ConfigHandler config;
+	private static SettingHandler setting;
 	private Connector connector;
 	private XmlHelper configXml;
 
+	public Setting initSetting()
+	{
+		if (setting == null)
+			setting = new SettingHandler();
+		setting.initTypeSetting();
+		setting.initClassSetting();
+		setting.initCheckSetting();
+		Setting res = new Setting();
+		res.setTypeSetting(setting.getTypeSetting());
+		res.setClassSetting(setting.getClassSetting());
+		res.setCheckSetting(setting.getCheckSetting());
+		return res;
+	}
+	
 	/**
 	 * 获取多线程启动时的参数信息
 	 * 
@@ -46,9 +63,9 @@ public class DataFactory
 	 */
 	public Map<String, Map<String, Map<String, String>>> getConnParam() throws ParseXMLException
 	{
-		if (setting == null)
-			setting = new ConfigHandler(configXml);
-		return setting.getParamInfo();
+		if (config == null)
+			config = new ConfigHandler(configXml);
+		return config.getParamInfo();
 	}
 
 	public ParseSetting getParseSetting(String configFilePath) throws DocumentException
@@ -74,11 +91,11 @@ public class DataFactory
 	 */
 	public Connector getConnector(String connConf)
 	{
-		if (setting == null)
-			setting = new ConfigHandler(configXml);
-		if (setting.getConnectType().toLowerCase().equals("tcp"))
+		if (config == null)
+			config = new ConfigHandler(configXml);
+		if (config.getConnectType().toLowerCase().equals("tcp"))
 		{
-			SocketSetting sockSetting = setting.getSocketConfig();
+			SocketSetting sockSetting = config.getSocketConfig();
 			if (!StringUtils.isNullOrEmpty(connConf))
 			{
 				if (sockSetting.getType().equals("server"))
@@ -88,16 +105,16 @@ public class DataFactory
 			}
 			connector = new TcpConnector(sockSetting);
 		}
-		else if (setting.getConnectType().toLowerCase().equals("com"))
+		else if (config.getConnectType().toLowerCase().equals("com"))
 		{
-			ComSetting comSetting = setting.getComConfig();
+			ComSetting comSetting = config.getComConfig();
 			if (!StringUtils.isNullOrEmpty(connConf))
 				comSetting.setPort(connConf);
 			connector = ComConnector.getInstance(comSetting);
 		}
-		else if (setting.getConnectType().toLowerCase().equals("udp"))
+		else if (config.getConnectType().toLowerCase().equals("udp"))
 		{
-			SocketSetting sockSetting = setting.getSocketConfig();
+			SocketSetting sockSetting = config.getSocketConfig();
 			if (!StringUtils.isNullOrEmpty(connConf))
 			{
 				if (sockSetting.getType().equals("server"))
@@ -120,9 +137,9 @@ public class DataFactory
 	 */
 	public SendSetting getSendSetting()
 	{
-		if (setting == null)
-			setting = new ConfigHandler(configXml);
-		return setting.getSendSetting();
+		if (config == null)
+			config = new ConfigHandler(configXml);
+		return config.getSendSetting();
 	}
 
 	/**
@@ -134,28 +151,31 @@ public class DataFactory
 	 */
 	public ReplySetting getReplySetting()
 	{
-		if (setting == null)
-			setting = new ConfigHandler(configXml);
-		return setting.getReplySetting();
+		if (config == null)
+			config = new ConfigHandler(configXml);
+		return config.getReplySetting();
 	}
 
 	public InterChangeSetting getInterChangeSetting()
 	{
-		if (setting == null)
-			setting = new ConfigHandler(configXml);
-		return setting.getInterChangeSetting();
+		if (config == null)
+			config = new ConfigHandler(configXml);
+		return config.getInterChangeSetting();
 	}
 
 	/**
 	 * 生成发送数据
 	 * 
 	 * @author zhaokai 2017年9月12日 下午12:38:22
-	 * @throws GenerateDataException
+	 * @throws GenerateDataException 报文生成异常
+	 * @throws IllegalAccessException  实例化type、class、check处理类对象异常
+	 * @throws InstantiationException 实例化type、class、check处理类对象异常
+	 * @throws ClassNotFoundException 未找到type、class、check对应的处理类
 	 */
-	public byte[] getSendData(ProtocolConfig proConfig, Map<String, Map<String, String>> paramMap)
-			throws GenerateDataException
+	public byte[] getSendData(Setting setting, ProtocolConfig proConfig, Map<String, Map<String, String>> paramMap)
+			throws GenerateDataException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
-		Data data = new Data();
+		Data data = new Data(setting);
 		return data.getSendData(proConfig, new HashMap<String, byte[]>(), paramMap);
 	}
 

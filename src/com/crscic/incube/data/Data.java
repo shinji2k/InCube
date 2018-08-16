@@ -12,9 +12,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import com.crscic.incube.data.typeparser.SetPartMem;
 import com.crscic.incube.exception.AppException;
 import com.crscic.incube.exception.GenerateDataException;
 import com.crscic.incube.log.Log;
+import com.crscic.incube.setting.Setting;
+import com.crscic.incube.setting.SettingEntity;
 import com.k.util.ByteUtils;
 import com.k.util.CollectionUtils;
 import com.k.util.StringUtils;
@@ -27,23 +30,40 @@ import com.k.util.filehelper.FileHelper;
  */
 public class Data
 {
-	private int increaseMem = -1;
+	// private int increaseMem = -1;
+	private Map<String, Integer> increaseParamMap;
+	private Map<String, Integer> fileParamMap;
 	private Map<String, Integer> proIncreaseMem;
-	private int fileOrderMem = 1;
+	// private int fileOrderMem = 1;
 	private Map<String, Integer> proFileOrderMem;
-	private int fileRandomMem = 0;
-	private int fileLength = 0;
+	// private int fileRandomMem = 0;
+	// private int fileLength = 0;
 	private List<PartMem> partMem; // 缓存需要补完的字段信息
 	private Map<String, byte[]> lastRandomByteMap;// 所有part上次发送的随机值
 
-	public Data()
+	private static SettingEntity typeSetting;
+	private static SettingEntity classSetting;
+	private static SettingEntity checkSetting;
+
+	public Data(Setting setting)
 	{
+		fileParamMap = new HashMap<String, Integer>();
+		fileParamMap.put("fileLength", 0);
+		fileParamMap.put("fileOrderMem", 1);
+		Random r = new Random();
+		fileParamMap.put("fileRandomMem", r.nextInt(500) % (499) + 1);
+
+		increaseParamMap = new HashMap<String, Integer>();
+		increaseParamMap.put("increaseMem", -1);
+
 		proIncreaseMem = new HashMap<String, Integer>();
 		proFileOrderMem = new HashMap<String, Integer>();
-		Random r = new Random();
-		fileRandomMem = r.nextInt(500) % (499) + 1;
 		partMem = new ArrayList<PartMem>();
 		lastRandomByteMap = new HashMap<String, byte[]>();
+
+		typeSetting = setting.getTypeSetting();
+		classSetting = setting.getClassSetting();
+		checkSetting = setting.getCheckSetting();
 	}
 
 	/**
@@ -58,23 +78,27 @@ public class Data
 	 * @return
 	 * @throws GenerateDataException
 	 * @author zhaokai
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 * @create 2017年12月1日 下午5:49:25
 	 */
 	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> quoteMap,
-			Map<String, Map<String, String>> paramMap) throws GenerateDataException
+			Map<String, Map<String, String>> paramMap)
+			throws GenerateDataException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
 		List<Part> partList = proConfig.getPart();
 
 		// 根据协议初始化顺序读文件时的缓存
 		if (proFileOrderMem.containsKey(proConfig.getProtocolName()))
-			fileOrderMem = proFileOrderMem.get(proConfig.getProtocolName());
+			fileParamMap.put("fileOrderMem", proFileOrderMem.get(proConfig.getProtocolName()));
 		else
-			fileOrderMem = 1;
+			fileParamMap.put("fileOrderMem", 1);
 		// 根据协议初始化自增时的缓存
 		if (proIncreaseMem.containsKey(proConfig.getProtocolName()))
-			increaseMem = proIncreaseMem.get(proConfig.getProtocolName());
+			fileParamMap.put("increaseMem", proIncreaseMem.get(proConfig.getProtocolName()));
 		else
-			increaseMem = -1;
+			fileParamMap.put("increaseMem", -1);
 
 		// 根据配置开始生成数据
 		Map<String, Byte[]> res = new LinkedHashMap<String, Byte[]>();
@@ -83,7 +107,7 @@ public class Data
 			String attrInfo = part.getAttribute().get("name");
 			byte[] b = null;
 
-			b = getPartData(part, quoteMap, paramMap);
+			b = getPartData(part, quoteMap, paramMap, fileParamMap, increaseParamMap, partMem, lastRandomByteMap);
 			res.put(attrInfo, CollectionUtils.byteToByte(b));
 		}
 		// 补完之前略过的内容
@@ -105,12 +129,12 @@ public class Data
 		for (int i = 0; i < resTmpList.size(); i++)
 			data[i] = resTmpList.get(i);
 
-		if (this.increaseMem != -1)
-			this.proIncreaseMem.put(proConfig.getProtocolName(), this.increaseMem);
+		if (fileParamMap.get("increaseMem") != -1)
+			this.proIncreaseMem.put(proConfig.getProtocolName(), fileParamMap.get("increaseMem"));
 
-		fileOrderMem++;
-		proFileOrderMem.put(proConfig.getProtocolName(), fileOrderMem);
-		fileRandomMem = 0; // 重置为0，下次调用的时候判断要是0的话生成新的随机数，避免重复读取
+		fileParamMap.put("fileOrderMem", fileParamMap.get("fileOrderMem") + 1);
+		proFileOrderMem.put(proConfig.getProtocolName(), fileParamMap.get("fileOrderMem"));
+		fileParamMap.put("fileRandomMem", 0); // 重置为0，下次调用的时候判断要是0的话生成新的随机数，避免重复读取
 		return data;
 	}
 
@@ -122,8 +146,12 @@ public class Data
 	 * @return
 	 * @author zhaokai
 	 * @version 2017年3月3日 下午4:28:20
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
 	private Map<String, Byte[]> reFilling(Map<String, Byte[]> res)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		if (partMem.size() == 0) // 不需要补完
 			return res;
@@ -143,7 +171,7 @@ public class Data
 		// 循环填充其他需要补完的字段，目前主要是校验
 		for (PartMem mem : partMem)
 		{
-			byte[] b = getCheckData(mem, res);
+			byte[] b = null;
 			if (mem.getType().equals("check"))
 				b = getCheckData(mem, res);
 			res.put(mem.getName(), CollectionUtils.byteToByte(b));
@@ -162,8 +190,12 @@ public class Data
 	 * @return
 	 * @author zhaokai
 	 * @version 2017年3月3日 下午5:47:42
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
 	private byte[] getCheckData(PartMem mem, Map<String, Byte[]> content)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		List<String> rangeList = mem.getRangeList();
 		List<Byte> data = new ArrayList<Byte>();
@@ -180,13 +212,27 @@ public class Data
 		}
 
 		byte[] b = null;
-		if (mem.getChildType().equals("xor"))
-			b = Encryption.getXorData(data);
-		else if (mem.getChildType().equals("crc"))
-			b = Encryption.getCrcData(data);
-		else if (mem.getChildType().equals("chksum"))
-			b = Encryption.getChkSum(data);
+		String checkType = mem.getChildType();
+		ICheckParser checkParser = getCheckParser(checkType);
+		b = checkParser.getCheckData(data);
 		return b;
+	}
+
+	/**
+	 * 根据check节点的内容调用对应的校验算法，并返回校验码
+	 * 
+	 * @param checkType
+	 * @return
+	 * @author zhaokai
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @create 2018年8月16日 下午5:27:00
+	 */
+	private ICheckParser getCheckParser(String checkType)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
+	{
+		return (ICheckParser) Class.forName(checkSetting.getMethodClass(checkType)).newInstance();
 	}
 
 	/**
@@ -246,46 +292,68 @@ public class Data
 	 * @return
 	 * @author zhaokai
 	 * @version 2017年3月1日 上午10:17:00
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 * @throws AppException
 	 */
-	private byte[] getPartData(Part part, Map<String, byte[]> quoteMap, Map<String, Map<String, String>> paramMap)
-			throws GenerateDataException
+	public static byte[] getPartData(Part part, Map<String, byte[]> quoteMap, Map<String, Map<String, String>> paramMap,
+			Map<String, Integer> fileParamMap, Map<String, Integer> increaseParamMap, List<PartMem> partMem,
+			Map<String, byte[]> lastRandomByteMap)
+			throws GenerateDataException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
 		String typeString = part.getType();
 		byte[] b = null;
-
-		// 检查字段是否是引用字段,是的话直接赋值返回
 		String nodeName = part.getAttribute().get("name");
-		if (quoteMap.containsKey(nodeName))
+
+		ITypeParser typeParser = getTypeParser(typeString);
+		List<String> paramList = typeSetting.getParam(typeString);
+		List<Object> params = new ArrayList<Object>();
+		for (String param : paramList)
 		{
-			b = quoteMap.get(nodeName);
-			return b;
+			if (param.equals("com.crscic.incube.data.Part"))
+				params.add(part);
+			if (param.equals("quoteMap"))
+				params.add(quoteMap);
+			if (param.equals("paramMap"))
+				params.add(paramMap);
+			if (param.equals("fileParamMap"))
+				params.add(fileParamMap);
+			if (param.equals("increaseParamMap"))
+				params.add(increaseParamMap);
+			if (param.equals("partMem"))
+				params.add(partMem);
+			if (param.equals("lastRandomByteMap"))
+				params.add(lastRandomByteMap);
 		}
 
-		// 根据节点类型分别生成数据
-		if (typeString.equals("aptotic"))
-			b = getAptoticData(part);
-		else if (typeString.equals("file")) // 读取文件
-			b = getFileData(part);
-		else if (typeString.equals("length"))
-			// 先将计算长度相关参数缓存，统一最后再计算
-			setPartMem(part);
-		else if (typeString.equals("generate"))// 递归
-			b = getGenerateData(part, quoteMap, paramMap);
-		else if (typeString.equals("time")) // 时间格式
-			b = getTimeData(part);
-		else if (typeString.equals("random")) // 随机选取
-			b = getRandomData(part);
-		else if (typeString.equals("check")) // 校验码
-			setPartMem(part);
-		else if (typeString.equals("increase"))
-			b = getIncreaseData(part);
-		else if (typeString.equals("parameter"))
-			b = getParameterData(part, paramMap);
-		else
+		b = typeParser.getSendData(params);
+		
+		//如果只缓存不处理的话，强制返回null。目前仅length和校验字段会缓存数据
+		if (typeParser instanceof SetPartMem)
+			return null;
+
+		if (b == null)
 			GenerateDataException.nullNodeValueException(nodeName, "type");
 		return b;
 
+	}
+
+	/**
+	 * 根据type节点的值返回对应的处理类
+	 * 
+	 * @param typeString
+	 * @return
+	 * @author zhaokai
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
+	 * @create 2018年8月14日 下午6:28:23
+	 */
+	private static ITypeParser getTypeParser(String typeString)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException
+	{
+		return (ITypeParser) Class.forName(typeSetting.getMethodClass(typeString)).newInstance();
 	}
 
 	/**
@@ -298,9 +366,14 @@ public class Data
 	 *            外部参数
 	 * @return
 	 * @author zhaokai
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 * @create 2017年12月1日 下午5:53:23
 	 */
+	@Deprecated
 	private byte[] getParameterData(Part part, Map<String, Map<String, String>> paramMap)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		if (paramMap == null || paramMap.keySet().size() == 0)
 			return null;
@@ -342,9 +415,14 @@ public class Data
 	 * @param part
 	 * @return
 	 * @author zhaokai
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 * @create 2017年10月13日 下午5:55:14
 	 */
+	@Deprecated
 	private byte[] getIncreaseData(Part part)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		List<Part> childPartList = part.getChildNodeList();
 		if (childPartList.size() == 0)
@@ -355,9 +433,9 @@ public class Data
 		}
 		Part childPart = childPartList.get(0);
 		// 若自增缓存变量未初始化，则初始化为配置中的起始值
-		if (this.increaseMem == -1)
-			this.increaseMem = Integer.parseInt(childPart.getValue());
-		String valueString = Integer.toString(this.increaseMem);
+		if (increaseParamMap.get("increaseMem") == -1)
+			increaseParamMap.put("increaseMem", Integer.parseInt(childPart.getValue()));
+		String valueString = Integer.toString(increaseParamMap.get("increaseMem"));
 		String classString = childPart.getValueClass();
 		byte[] b = null;
 		b = getByteArrayByClass(valueString, classString);
@@ -378,11 +456,13 @@ public class Data
 
 		// 每使用一次自增值
 		int step = Integer.parseInt(childPart.getSplit());
-		this.increaseMem += step;
+		increaseParamMap.put("increaseMem", increaseParamMap.get("increaseMem") + step);
 		return b;
 	}
 
+	@Deprecated
 	private byte[] getAptoticData(Part part)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		byte[] b;
 		// 获取value的值
@@ -413,8 +493,12 @@ public class Data
 	 * @return
 	 * @author zhaokai
 	 * @version 2017年2月14日 下午7:47:20
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	private byte[] getFileData(Part part)
+	@Deprecated
+	private byte[] getFileData(Part part) throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		List<Part> childPartList = part.getChildNodeList();
 		// 如果后期加入从多个文件中读取内容，此处的子节点数量需要修改为==0
@@ -436,10 +520,10 @@ public class Data
 		FileHelper fh = new FileHelper(filePath);
 		String line = null;
 		// 设置文件最大行数，因读取的各文件条数需要保持一致，因此仅读取一次文件以提高性能
-		if (fileLength == 0) // 为0即为第一次需要初始化最大行数
-			fileLength = (int) fh.length();
+		if (fileParamMap.get("fileLength") == 0) // 为0即为第一次需要初始化最大行数
+			fileParamMap.put("fileLength", (int) fh.length());
 
-		if (fileLength == 0) // 设置完最大行数仍为0则认为文件为空
+		if (fileParamMap.get("fileLength") == 0) // 设置完最大行数仍为0则认为文件为空
 		{
 			Log.warn("文件为空，文件：" + filePath);
 			return null;
@@ -447,23 +531,25 @@ public class Data
 
 		if (type.equals("order"))
 		{
-			if (fileOrderMem > fileLength) // 超过最大行数后从第一行重新开始
-				fileOrderMem = 1;
-			line = fh.readLine(fileOrderMem);
+			if (fileParamMap.get("fileOrderMem") > fileParamMap.get("fileLength")) // 超过最大行数后从第一行重新开始
+				fileParamMap.put("fileOrderMem", 1);
+			line = fh.readLine(fileParamMap.get("fileOrderMem"));
 		}
 		else
 		{
 			// 若生成的随机数大于文件最大行数，重新计算随机数
-			if (fileRandomMem > fileLength || fileRandomMem == 0)
+			if (fileParamMap.get("fileRandomMem") > fileParamMap.get("fileLength")
+					|| fileParamMap.get("fileRandomMem") == 0)
 			{
 				Random r = new Random();
-				fileRandomMem = r.nextInt(fileLength) % (fileLength - 1) + 1;
+				fileParamMap.put("fileRandomMem",
+						r.nextInt(fileParamMap.get("fileLength")) % (fileParamMap.get("fileLength") - 1) + 1);
 			}
-			line = fh.readLine(fileRandomMem);
+			line = fh.readLine(fileParamMap.get("fileRandomMem"));
 		}
 		if (StringUtils.isNullOrEmpty(line))
 		{
-			Log.warn("文件中数据错误，文件：" + filePath + "，行号：" + (fileOrderMem));
+			Log.warn("文件中数据错误，文件：" + filePath + "，行号：" + (fileParamMap.get("fileOrderMem")));
 			return null;
 		}
 
@@ -488,8 +574,9 @@ public class Data
 		return b;
 	}
 
+	@Deprecated
 	private byte[] getGenerateData(Part part, Map<String, byte[]> quoteMap, Map<String, Map<String, String>> paramMap)
-			throws GenerateDataException
+			throws GenerateDataException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
 		List<Part> childPartList = part.getChildNodeList();
 		String splitString = null;
@@ -500,7 +587,8 @@ public class Data
 		List<Byte> res = new ArrayList<Byte>();
 		for (Part childPart : childPartList)
 		{
-			byte[] b = getPartData(childPart, quoteMap, paramMap);
+			byte[] b = getPartData(childPart, quoteMap, paramMap, fileParamMap, increaseParamMap, partMem,
+					lastRandomByteMap);
 			CollectionUtils.copyArrayToList(res, b);
 			CollectionUtils.copyArrayToList(res, split);
 		}
@@ -515,7 +603,9 @@ public class Data
 		return ret;
 	}
 
-	private byte[] getTimeData(Part part) throws GenerateDataException
+	@Deprecated
+	private byte[] getTimeData(Part part)
+			throws GenerateDataException, InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		String valueString = part.getValue();
 		if (StringUtils.isNullOrEmpty(valueString))
@@ -554,8 +644,13 @@ public class Data
 	 * @return
 	 * @author zhaokai
 	 * @version 2017年3月1日 下午4:29:40
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
+	@Deprecated
 	private byte[] getRandomData(Part part)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		// partname可能存在重复的情况，但目前在random中未出现，暂未处理该情况
 		String partName = part.getAttribute().get("name");
@@ -631,6 +726,7 @@ public class Data
 	 * @author zhaokai
 	 * @version 2017年3月3日 下午3:11:29
 	 */
+	@Deprecated
 	private void setPartMem(Part part) throws GenerateDataException
 	{
 		// value中子part检查
@@ -684,7 +780,7 @@ public class Data
 	 * @author zhaokai
 	 * @version 2017年3月20日 下午4:36:27
 	 */
-	private String getSplitString(String split)
+	public static String getSplitString(String split)
 	{
 		String res = split;
 		if (StringUtils.isNullOrEmpty(res))
@@ -692,6 +788,12 @@ public class Data
 		if (res.toLowerCase().equals("tab"))
 			return "\t";
 		return res;
+	}
+
+	public static IClassParser getClassParser(String classValue)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
+	{
+		return (IClassParser) Class.forName(classSetting.getMethodClass(classValue)).newInstance();
 	}
 
 	/**
@@ -702,8 +804,12 @@ public class Data
 	 * @return
 	 * @author zhaokai
 	 * @version 2017年4月13日 上午10:07:42
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
 	public static byte[] getByteArrayByClass(String src, String classString)
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		byte[] b = null;
 		if (classString == null)
@@ -712,79 +818,9 @@ public class Data
 		}
 		classString = classString.trim().toLowerCase();
 
-		if (classString.equals("byte"))
-		{
-			b = ByteUtils.hexStringToBytes(src);
-		}
-		else if (classString.equals("float"))
-		{
-			// Float f = new Float(Float.parseFloat(src) * 100);
-			// 按照铁标只需要float乘以100发送，不需要转int
-			b = ByteUtils.getBytes(Float.parseFloat(src));
-			// b = ByteUtils.getBytes(f.intValue());
-		}
-		else if (classString.equals("hextobyte"))
-		{
-			String hexString = ByteUtils.byteToHexString(src.getBytes());
-			hexString = hexString.replaceAll(" ", "");
-			b = ByteUtils.getBytes(hexString);
-		}
-		else if (classString.equals("hextoasc"))
-		{
-			b = ByteUtils.getBytes(src);
-		}
-		else if (classString.toLowerCase().equals("inttobytetoasc"))
-		{
-			byte[] intByte = ByteUtils.getBytes(Integer.parseInt(src)); // 返回的是4字节的数组
-			// 为适用A接口，将4字节缩为2字节
-			b = new byte[2];
-			b[0] = (byte) ((intByte[0] << 8) | intByte[1]);
-			b[1] = (byte) ((intByte[2] << 8) | intByte[3]);
-			b = ByteUtils.byteToAsc(b);
-		}
-		else if (classString.toLowerCase().equals("inttohextobyte"))
-		{
-			int srcInt = Integer.parseInt(src);
-			String hexSrc = Integer.toHexString(srcInt).toUpperCase();
-			b = ByteUtils.getBytes(hexSrc);
-		}
-		else if (classString.toLowerCase().equals("int"))
-		{
-			int srcInt = Integer.parseInt(src);
-			b = ByteUtils.getBytes(srcInt);
-		}
-		else if (classString.toLowerCase().equals("scadaid"))
-		{
-			b = ByteUtils.scadaIdToBytes(src);
-		}
-		else if (classString.toLowerCase().equals("scadafatherid"))
-		{
-			String[] parts = src.split("\\.");
-			for (int i = parts.length - 1; i > -1; i--)
-			{
-				if (!parts[i].equals("0"))
-				{
-					parts[i] = "0";
-					break;
-				}
-			}
-			StringBuilder fatherIdStr = new StringBuilder();
-			for (int i = 0; i < parts.length; i++)
-				fatherIdStr.append(parts[i] + ".");
+		IClassParser classParser = getClassParser(classString);
+		b = classParser.getByteArrayByClass(src);
 
-			fatherIdStr = fatherIdStr.deleteCharAt(fatherIdStr.length() - 1);
-			b = ByteUtils.scadaIdToBytes(fatherIdStr.toString());
-		}
-		else if (classString.toLowerCase().equals("int8"))
-		{
-			int srcInt = Integer.parseInt(src);
-			b = new byte[1];
-			b[0] = ByteUtils.getBytes(srcInt)[3];
-		}
-		else
-		{
-			b = ByteUtils.getBytes(src);
-		}
 		return b;
 	}
 
@@ -803,7 +839,7 @@ public class Data
 	 * @author zhaokai
 	 * @version 2017年4月5日 下午4:29:44
 	 */
-	private byte[] doFill(byte[] value, String fillByteString, String fillDirect, int len)
+	public static byte[] doFill(byte[] value, String fillByteString, String fillDirect, int len)
 	{
 		if (len == 0)
 			return value;
