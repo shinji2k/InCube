@@ -1,13 +1,12 @@
 package com.crscic.incube.data.typeparser;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.crscic.incube.data.Data;
 import com.crscic.incube.data.ITypeParser;
-import com.crscic.incube.data.Part;
+import com.crscic.incube.entity.Part;
+import com.crscic.incube.entity.PartMem;
 import com.crscic.incube.exception.GenerateDataException;
 
 /**
@@ -24,44 +23,25 @@ public class ParameterParser implements ITypeParser
 	{
 		Part part = (Part) paramList.get(0);
 		@SuppressWarnings("unchecked")
-		Map<String, Map<String, String>> paramMap = (Map<String, Map<String, String>>) paramList.get(1);
+		Map<String, byte[]> quoteMap = (Map<String, byte[]>) paramList.get(1);
 		@SuppressWarnings("unchecked")
-		Map<String, byte[]> lastRandomByteMap = (Map<String, byte[]>) paramList.get(2);
+		Map<String, Part> paramMap = (Map<String, Part>) paramList.get(2);
+		@SuppressWarnings("unchecked")
+		Map<String, Integer> fileParamMap = (Map<String, Integer>) paramList.get(3);
+		@SuppressWarnings("unchecked")
+		Map<String, Integer> increaseParamMap = (Map<String, Integer>) paramList.get(4);
+		@SuppressWarnings("unchecked")
+		List<PartMem> partMem = (List<PartMem>)paramList.get(5);
+		@SuppressWarnings("unchecked")
+		Map<String, byte[]> lastRandomByteMap = (Map<String, byte[]>) paramList.get(6);
 		
 		if (paramMap == null || paramMap.keySet().size() == 0)
 			return null;
 		String fieldName = part.getAttribute().get("name");
 		byte[] b = null;
 		if (paramMap.containsKey(fieldName))
-		{
-			Map<String, String> paramAttrMap = paramMap.get(fieldName);
-			if (paramAttrMap.get("type").toLowerCase().trim().equals("aptotic"))
-				b = Data.getByteArrayByClass(paramAttrMap.get("value"), paramAttrMap.get("class"));
-			else if (paramAttrMap.get("type").toLowerCase().trim().equals("random"))
-			{
-				// 组装一个临时part
-				Part tempRandomPart = new Part();
-				Map<String, String> tempAttribute = new HashMap<String, String>();
-				tempAttribute.put("name", part.getAttribute().get("name"));
-				tempRandomPart.setAttribute(tempAttribute);
-				tempRandomPart.setType(paramAttrMap.get("type"));
-				tempRandomPart.setValue(paramAttrMap.get("value"));
-				tempRandomPart.setValueClass(paramAttrMap.get("class"));
-				tempRandomPart.setLen(part.getLen());
-				tempRandomPart.setSplit(part.getSplit());
-				tempRandomPart.setFillByte(part.getFillByte());
-				tempRandomPart.setFillDirection(part.getFillDirection());
-				tempRandomPart.setPercent(Integer.parseInt(paramAttrMap.get("percent")));
-
-				List<Object> tempParamList = new ArrayList<Object>();
-				tempParamList.add(tempRandomPart);
-				tempParamList.add(lastRandomByteMap);
-				b = new RandomParser().getSendData(tempParamList);
-			}
-			else
-				b = Data.getByteArrayByClass(paramAttrMap.get("value"), paramAttrMap.get("class"));
-
-		}
+			b = Data.getPartData(paramMap.get(fieldName), quoteMap, paramMap, fileParamMap, increaseParamMap, partMem, lastRandomByteMap);
+		
 		return b;
 	}
 

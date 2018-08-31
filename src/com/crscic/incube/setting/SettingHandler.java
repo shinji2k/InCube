@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.dom4j.Element;
 
+import com.crscic.incube.entity.SettingEntity;
 import com.crscic.incube.log.Log;
 import com.crscic.incube.xmlhelper.XmlHelper;
 

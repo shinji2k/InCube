@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import com.crscic.incube.entity.SocketSetting;
 import com.crscic.incube.exception.ConnectException;
 import com.crscic.incube.log.Log;
-import com.crscic.incube.setting.SocketSetting;
 import com.k.util.CollectionUtils;
 import com.k.util.StringUtils;
 

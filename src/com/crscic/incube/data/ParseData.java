@@ -1,6 +1,6 @@
 package com.crscic.incube.data;
 
-import com.crscic.incube.setting.Setting;
+import com.crscic.incube.entity.Setting;
 
 /**
  * @author zhaokai

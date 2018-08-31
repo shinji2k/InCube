@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.crscic.incube.data.Data;
 import com.crscic.incube.data.ITypeParser;
-import com.crscic.incube.data.Part;
+import com.crscic.incube.entity.Part;
 import com.crscic.incube.exception.GenerateDataException;
 import com.crscic.incube.log.Log;
 import com.k.util.StringUtils;

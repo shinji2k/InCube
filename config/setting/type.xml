@@ -80,7 +80,11 @@
 		<class>com.crscic.incube.data.typeparser.ParameterParser</class>
 		<parameters>
 			<param>com.crscic.incube.data.Part</param>
+			<param>quoteMap</param>
 			<param>paramMap</param>
+			<param>fileParamMap</param>
+			<param>increaseParamMap</param>
+			<param>partMem</param>
 			<param>lastRandomByteMap</param>
 		</parameters>
 	</type>
@@ -91,6 +95,20 @@
 		<parameters>
 			<param>com.crscic.incube.data.Part</param>
 			<param>quoteMap</param>
+		</parameters>
+	</type>
+
+	<type>
+		<name>storage</name>
+		<class>com.crscic.incube.data.typeparser.StorageParser</class>
+		<parameters>
+			<param>com.crscic.incube.data.Part</param>
+			<param>quoteMap</param>
+			<param>paramMap</param>
+			<param>fileParamMap</param>
+			<param>increaseParamMap</param>
+			<param>partMem</param>
+			<param>lastRandomByteMap</param>
 		</parameters>
 	</type>
 </root>

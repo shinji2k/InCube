@@ -13,11 +13,13 @@ import java.util.Map;
 import java.util.Random;
 
 import com.crscic.incube.data.typeparser.SetPartMem;
+import com.crscic.incube.entity.Part;
+import com.crscic.incube.entity.PartMem;
+import com.crscic.incube.entity.Setting;
+import com.crscic.incube.entity.SettingEntity;
 import com.crscic.incube.exception.AppException;
 import com.crscic.incube.exception.GenerateDataException;
 import com.crscic.incube.log.Log;
-import com.crscic.incube.setting.Setting;
-import com.crscic.incube.setting.SettingEntity;
 import com.k.util.ByteUtils;
 import com.k.util.CollectionUtils;
 import com.k.util.StringUtils;
@@ -84,7 +86,7 @@ public class Data
 	 * @create 2017年12月1日 下午5:49:25
 	 */
 	public byte[] getSendData(ProtocolConfig proConfig, Map<String, byte[]> quoteMap,
-			Map<String, Map<String, String>> paramMap)
+			Map<String, Part> paramMap)
 			throws GenerateDataException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
 		List<Part> partList = proConfig.getPart();
@@ -297,7 +299,7 @@ public class Data
 	 * @throws InstantiationException
 	 * @throws AppException
 	 */
-	public static byte[] getPartData(Part part, Map<String, byte[]> quoteMap, Map<String, Map<String, String>> paramMap,
+	public static byte[] getPartData(Part part, Map<String, byte[]> quoteMap, Map<String, Part> paramMap,
 			Map<String, Integer> fileParamMap, Map<String, Integer> increaseParamMap, List<PartMem> partMem,
 			Map<String, byte[]> lastRandomByteMap)
 			throws GenerateDataException, ClassNotFoundException, InstantiationException, IllegalAccessException
@@ -305,7 +307,7 @@ public class Data
 		String typeString = part.getType();
 		byte[] b = null;
 		String nodeName = part.getAttribute().get("name");
-
+		
 		ITypeParser typeParser = getTypeParser(typeString);
 		List<String> paramList = typeSetting.getParam(typeString);
 		List<Object> params = new ArrayList<Object>();
@@ -350,7 +352,7 @@ public class Data
 	 * @throws InstantiationException
 	 * @create 2018年8月14日 下午6:28:23
 	 */
-	private static ITypeParser getTypeParser(String typeString)
+	public static ITypeParser getTypeParser(String typeString)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
 		return (ITypeParser) Class.forName(typeSetting.getMethodClass(typeString)).newInstance();
@@ -575,7 +577,7 @@ public class Data
 	}
 
 	@Deprecated
-	private byte[] getGenerateData(Part part, Map<String, byte[]> quoteMap, Map<String, Map<String, String>> paramMap)
+	private byte[] getGenerateData(Part part, Map<String, byte[]> quoteMap, Map<String, Part> paramMap)
 			throws GenerateDataException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
 		List<Part> childPartList = part.getChildNodeList();

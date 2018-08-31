@@ -1,4 +1,4 @@
-package com.crscic.incube.config;
+package com.crscic.incube.entity;
 
 import java.util.List;
 

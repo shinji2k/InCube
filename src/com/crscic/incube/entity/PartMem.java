@@ -1,4 +1,4 @@
-package com.crscic.incube.data;
+package com.crscic.incube.entity;
 
 import java.util.List;
 

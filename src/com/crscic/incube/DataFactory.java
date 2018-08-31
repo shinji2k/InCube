@@ -1,5 +1,6 @@
 package com.crscic.incube;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,25 +9,26 @@ import java.util.Map;
 import org.dom4j.DocumentException;
 
 import com.crscic.incube.config.ConfigHandler;
-import com.crscic.incube.config.ParseSetting;
-import com.crscic.incube.config.Request;
-import com.crscic.incube.config.Response;
 import com.crscic.incube.connector.ComConnector;
 import com.crscic.incube.connector.Connector;
 import com.crscic.incube.connector.TcpConnector;
 import com.crscic.incube.connector.UdpConnector;
 import com.crscic.incube.data.Data;
 import com.crscic.incube.data.ProtocolConfig;
+import com.crscic.incube.entity.ComSetting;
+import com.crscic.incube.entity.InterChangeSetting;
+import com.crscic.incube.entity.ParseSetting;
+import com.crscic.incube.entity.Part;
+import com.crscic.incube.entity.ReplySetting;
+import com.crscic.incube.entity.Request;
+import com.crscic.incube.entity.Response;
+import com.crscic.incube.entity.SendSetting;
+import com.crscic.incube.entity.Setting;
+import com.crscic.incube.entity.SocketSetting;
 import com.crscic.incube.exception.GenerateDataException;
 import com.crscic.incube.exception.ParseXMLException;
 import com.crscic.incube.log.Log;
-import com.crscic.incube.setting.ComSetting;
-import com.crscic.incube.setting.InterChangeSetting;
-import com.crscic.incube.setting.ReplySetting;
-import com.crscic.incube.setting.SendSetting;
-import com.crscic.incube.setting.Setting;
 import com.crscic.incube.setting.SettingHandler;
-import com.crscic.incube.setting.SocketSetting;
 import com.crscic.incube.xmlhelper.XmlHelper;
 import com.k.util.StringUtils;
 
@@ -59,9 +61,14 @@ public class DataFactory
 	 * @throws DocumentException
 	 * @author zhaokai
 	 * @throws ParseXMLException
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 * @throws NoSuchMethodException 
+	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
 	 * @create 2017年12月13日 下午5:46:44
 	 */
-	public Map<String, Map<String, Map<String, String>>> getConnParam() throws ParseXMLException
+	public Map<String, Map<String, Part>> getConnParam() throws ParseXMLException, SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
 	{
 		if (config == null)
 			config = new ConfigHandler(configXml);
@@ -172,7 +179,7 @@ public class DataFactory
 	 * @throws InstantiationException 实例化type、class、check处理类对象异常
 	 * @throws ClassNotFoundException 未找到type、class、check对应的处理类
 	 */
-	public byte[] getSendData(Setting setting, ProtocolConfig proConfig, Map<String, Map<String, String>> paramMap)
+	public byte[] getSendData(Setting setting, ProtocolConfig proConfig, Map<String, Part> paramMap)
 			throws GenerateDataException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
 		Data data = new Data(setting);

@@ -6,8 +6,7 @@ import java.util.Random;
 
 import com.crscic.incube.data.Data;
 import com.crscic.incube.data.ITypeParser;
-import com.crscic.incube.data.Part;
-import com.crscic.incube.exception.GenerateDataException;
+import com.crscic.incube.entity.Part;
 import com.crscic.incube.log.Log;
 import com.k.util.CollectionUtils;
 import com.k.util.StringUtils;
@@ -21,7 +20,7 @@ public class RandomParser implements ITypeParser
 
 	@Override
 	public byte[] getSendData(List<Object> paramList)
-			throws InstantiationException, IllegalAccessException, ClassNotFoundException, GenerateDataException
+			throws InstantiationException, IllegalAccessException, ClassNotFoundException
 	{
 		Part part = (Part) paramList.get(0);
 		@SuppressWarnings("unchecked")

@@ -1,4 +1,4 @@
-package com.crscic.incube.setting;
+package com.crscic.incube.entity;
 
 import java.util.HashMap;
 import java.util.List;

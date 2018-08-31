@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.crscic.incube.data;
+package com.crscic.incube.entity;
 
 import java.util.List;
 import java.util.Map;
@@ -30,10 +30,11 @@ public class Part
 	 */
 	private String valueClass;
 	private String len;
-
+	private String desc;
+	
 	private List<Part> childNodeList;
 	private Map<String, String> attribute;
-
+	
 	/**
 	 * @return the type
 	 */
@@ -86,6 +87,14 @@ public class Part
 			this.percent = 1000;
 		else
 			this.percent = percent;
+	}
+
+	public void setPercent(String percent)
+	{
+		if (percent == null || percent.equals(""))
+			this.percent = 0;
+		else
+			this.percent = Integer.parseInt(percent);
 	}
 
 	/**
@@ -205,5 +214,15 @@ public class Part
 	public void setAttribute(Map<String, String> attribute)
 	{
 		this.attribute = attribute;
+	}
+
+	public String getDesc()
+	{
+		return desc;
+	}
+
+	public void setDesc(String desc)
+	{
+		this.desc = desc;
 	}
 }

@@ -5,6 +5,8 @@ package com.crscic.incube.data;
 
 import java.util.List;
 
+import com.crscic.incube.entity.Part;
+
 /**
  * 
  * @author zhaokai

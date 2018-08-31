@@ -1,11 +1,9 @@
-package com.crscic.incube.config;
+package com.crscic.incube.entity;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.crscic.incube.entity.Position;
 
 /**
  * @author zhaokai

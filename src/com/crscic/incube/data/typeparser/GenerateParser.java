@@ -6,8 +6,8 @@ import java.util.Map;
 
 import com.crscic.incube.data.Data;
 import com.crscic.incube.data.ITypeParser;
-import com.crscic.incube.data.Part;
-import com.crscic.incube.data.PartMem;
+import com.crscic.incube.entity.Part;
+import com.crscic.incube.entity.PartMem;
 import com.crscic.incube.exception.GenerateDataException;
 import com.k.util.ByteUtils;
 import com.k.util.CollectionUtils;
@@ -29,7 +29,7 @@ public class GenerateParser implements ITypeParser
 		@SuppressWarnings("unchecked")
 		Map<String, byte[]> quoteMap = (Map<String, byte[]>) paramList.get(1);
 		@SuppressWarnings("unchecked")
-		Map<String, Map<String, String>> paramMap = (Map<String, Map<String, String>>) paramList.get(2);
+		Map<String, Part> paramMap = (Map<String, Part>) paramList.get(2);
 		@SuppressWarnings("unchecked")
 		Map<String, Integer> fileParamMap = (Map<String, Integer>) paramList.get(3);
 		@SuppressWarnings("unchecked")

@@ -6,7 +6,7 @@ import java.util.Random;
 
 import com.crscic.incube.data.Data;
 import com.crscic.incube.data.ITypeParser;
-import com.crscic.incube.data.Part;
+import com.crscic.incube.entity.Part;
 import com.crscic.incube.log.Log;
 import com.k.util.StringUtils;
 import com.k.util.filehelper.FileHelper;

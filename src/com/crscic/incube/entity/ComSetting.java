@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.crscic.incube.setting;
+package com.crscic.incube.entity;
 
 /**
  * Com接口的配置实体类

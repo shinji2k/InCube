@@ -1,5 +1,6 @@
 package com.crscic.incube.config;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,15 +8,18 @@ import java.util.Map;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
-import com.crscic.incube.data.Part;
 import com.crscic.incube.data.ProtocolConfig;
+import com.crscic.incube.entity.ComSetting;
+import com.crscic.incube.entity.InterChangeSetting;
+import com.crscic.incube.entity.ParseSetting;
+import com.crscic.incube.entity.Part;
+import com.crscic.incube.entity.ReplySetting;
+import com.crscic.incube.entity.Request;
+import com.crscic.incube.entity.Response;
+import com.crscic.incube.entity.SendSetting;
+import com.crscic.incube.entity.SocketSetting;
 import com.crscic.incube.exception.ParseXMLException;
 import com.crscic.incube.log.Log;
-import com.crscic.incube.setting.ComSetting;
-import com.crscic.incube.setting.InterChangeSetting;
-import com.crscic.incube.setting.ReplySetting;
-import com.crscic.incube.setting.SendSetting;
-import com.crscic.incube.setting.SocketSetting;
 import com.crscic.incube.xmlhelper.XmlHelper;
 import com.k.util.StringUtils;
 
@@ -89,11 +93,16 @@ public class ConfigHandler
 	 * @return 第一个Map是connector节点与字段名map对应；第二个Map是字段名与属性map对应；第三Map个是属性与值对应
 	 * @throws ParseXMLException
 	 * @author zhaokai
+	 * @throws InvocationTargetException 
+	 * @throws IllegalAccessException 
+	 * @throws NoSuchMethodException 
+	 * @throws IllegalArgumentException 
+	 * @throws SecurityException 
 	 * @create 2018年1月5日 下午3:05:53
 	 */
-	public Map<String, Map<String, Map<String, String>>> getParamInfo() throws ParseXMLException
+	public Map<String, Map<String, Part>> getParamInfo() throws ParseXMLException, SecurityException, IllegalArgumentException, NoSuchMethodException, IllegalAccessException, InvocationTargetException
 	{
-		Map<String, Map<String, Map<String, String>>> paramInfoMapper = new HashMap<String, Map<String, Map<String, String>>>();
+		Map<String, Map<String, Part>> paramInfoMapper = new HashMap<String, Map<String, Part>>();
 		// 是否多线程启动
 		if (isMuti())
 		{
@@ -109,9 +118,15 @@ public class ConfigHandler
 			{
 				// 设置启动多线程服务使用的IP或Com号
 				List<Element> paramEleList = XmlHelper.getElements(connEle);
-				Map<String, Map<String, String>> paramMapped = new HashMap<String, Map<String, String>>();
+				Map<String, Part> paramMapped = new HashMap<String, Part>();
 				for (Element paramEle : paramEleList)
-					paramMapped.put(paramEle.getName(), XmlHelper.getAttributesMap(paramEle));
+				{
+					Part part = fillPartByParamAttribute(XmlHelper.getAttributesMap(paramEle));
+					Map<String, String> tempAttrMap = new HashMap<String, String>();
+					tempAttrMap.put("name", paramEle.getName());
+					part.setAttribute(tempAttrMap);
+					paramMapped.put(paramEle.getName(), part);
+				}
 
 				paramInfoMapper.put(connEle.attributeValue("conf"), paramMapped);
 			}
@@ -125,6 +140,33 @@ public class ConfigHandler
 		}
 
 		return paramInfoMapper;
+	}
+	
+	/**
+	 * 
+	 * @param attrMap
+	 * @return
+	 * @throws SecurityException set方法作用域异常
+	 * @throws NoSuchMethodException param.xml中属性找不到对应Part的set方法异常
+	 * @throws IllegalArgumentException param.xml中属性类型与Part属性类型不匹配
+	 * @throws IllegalAccessException param.xml中属性对应Part的set方法参数传递异常
+	 * @throws InvocationTargetException param.xml中节点对应Part对象实例化异常
+	 * @author zhaokai
+	 * @create 2018年8月17日 下午6:44:03
+	 */
+	public static Part fillPartByParamAttribute(Map<String, String> attrMap) throws SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException
+	{
+		Part part = new Part();
+		Class<?> partClazz = part.getClass();
+		for (String attrKey : attrMap.keySet())
+		{
+			String methodName = "set" + attrKey.substring(0, 1).toUpperCase() + attrKey.substring(1);
+			if (attrKey.equals("class"))
+				methodName = "setValueClass";
+			partClazz.getMethod(methodName, String.class).invoke(part, attrMap.get(attrKey));
+		}
+		
+		return part;
 	}
 
 	/**
@@ -324,7 +366,7 @@ public class ConfigHandler
 	 * @author zhaokai
 	 * @create 2017年9月12日 下午12:37:06
 	 */
-	private List<Part> fillPart(Element ele)
+	public static List<Part> fillPart(Element ele)
 	{
 		List<Part> partList = new ArrayList<Part>();
 		List<Element> partEleList = XmlHelper.getElements(ele);

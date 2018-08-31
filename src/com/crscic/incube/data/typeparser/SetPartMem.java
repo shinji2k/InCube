@@ -5,8 +5,8 @@ import java.util.List;
 
 import com.crscic.incube.data.Data;
 import com.crscic.incube.data.ITypeParser;
-import com.crscic.incube.data.Part;
-import com.crscic.incube.data.PartMem;
+import com.crscic.incube.entity.Part;
+import com.crscic.incube.entity.PartMem;
 import com.crscic.incube.exception.GenerateDataException;
 import com.crscic.incube.log.Log;
 import com.k.util.StringUtils;
@@ -26,7 +26,6 @@ public class SetPartMem implements ITypeParser
 		Part part = (Part) paramList.get(0);
 		@SuppressWarnings("unchecked")
 		List<PartMem> partMem = (List<PartMem>) paramList.get(1);
-		
 		List<Part> childPartList = part.getChildNodeList();
 		if (childPartList.size() == 0)
 		{
