@@ -53,7 +53,6 @@ public class StorageParser implements ITypeParser
 			Part paramPart = paramMap.get(paramKey);
 			byte[] paramValue = Data.getPartData(paramPart, quoteMap, paramMap, fileParamMap, increaseParamMap, partMem,
 					lastRandomByteMap);
-			if (paramPart.getAttribute().get("name").equals("envFolderId"))
 			if (CollectionUtils.isSameArray(paramValue, quote))
 			{
 				storageName = paramKey;
@@ -72,7 +71,7 @@ public class StorageParser implements ITypeParser
 					partMem, lastRandomByteMap);
 			resList = CollectionUtils.copyArrayToList(resList, storagePartBytes);
 		}
-		
+
 		return CollectionUtils.toByteArray(resList);
 	}
 
