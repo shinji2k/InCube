@@ -45,7 +45,7 @@ public class TcpConnector implements Connector
 		{
 			try
 			{
-				InetAddress inet= InetAddress.getLocalHost();
+				InetAddress inet = InetAddress.getLocalHost();
 				this.localIp = inet.getHostAddress();
 			}
 			catch (UnknownHostException e)
@@ -57,7 +57,7 @@ public class TcpConnector implements Connector
 		{
 			this.localIp = sockCfg.getLocalIp();
 		}
-		
+
 		this.port = Integer.parseInt(sockCfg.getPort());
 		if (sockCfg.getLocalPort() == null || sockCfg.getLocalPort().equals(""))
 			this.localPort = new Random().nextInt(55534) + 10000;
@@ -143,7 +143,9 @@ public class TcpConnector implements Connector
 		}
 		catch (IOException e)
 		{
-			Log.error("无法获取输入数据", e);
+			Log.error(localIp + "的网络IO错误，无法获取输入数据", e);
+			// 无法获取输入数据后初始化connector，外面调用方需要reopen connector
+			connector = null;
 		}
 		return recvData;
 	}
@@ -181,24 +183,25 @@ public class TcpConnector implements Connector
 				{
 					isServer = true;
 				}
-				Log.debug("启动服务:" + ip + ":" + port + " ...");
-				InetAddress inet = InetAddress.getByName(ip);
-				server = new ServerSocket(port, 255, inet);
+				if (server == null)
+				{
+					Log.debug("启动服务:" + ip + ":" + port + " ...");
+					InetAddress inet = InetAddress.getByName(ip);
+					server = new ServerSocket(port, 255, inet);
+				}
 				Log.debug("等待客户端连接...");
-				connector = server.accept(); // 不确定当离开这个方法后，server会不会销毁
+				connector = server.accept();
 				Log.debug("连接客户端：" + connector.getRemoteSocketAddress().toString().substring(1));
 			}
 		}
-		catch (
-
-		UnknownHostException e)
+		catch (UnknownHostException e)
 		{
 			Log.error("错误的主机地址", e);
 			throw new ConnectException();
 		}
 		catch (IOException e)
 		{
-			Log.error("接口打开失败", e);
+			Log.error(localIp + "接口打开失败", e);
 			throw new ConnectException();
 		}
 	}
