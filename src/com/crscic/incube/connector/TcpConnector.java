@@ -4,8 +4,8 @@
 package com.crscic.incube.connector;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -127,16 +127,14 @@ public class TcpConnector implements Connector
 	@Override
 	public List<Byte> receive()
 	{
-		InputStream is = null;
 		List<Byte> recvData = null;
 		try
 		{
-			is = connector.getInputStream();
 			recvData = new ArrayList<Byte>();
 			int len = 1024;
 			// 虽然几率较低，但仍有可能在从while的条件判断到read之间有新的数据进来，造成少取了数据
 			byte[] buff = new byte[len];
-			int recvLen = is.read(buff, 0, len);
+			int recvLen = connector.getInputStream().read(buff, 0, len);
 			if (recvLen != -1)
 				CollectionUtils.copyArrayToList(recvData, buff, recvLen);
 		}
@@ -150,6 +148,7 @@ public class TcpConnector implements Connector
 			}
 			catch (ConnectException e1)
 			{
+				Log.error(getLocalIp() + "网络IO错误后关闭连接失败", e1);
 			}
 			connector = null;
 		}
@@ -208,6 +207,19 @@ public class TcpConnector implements Connector
 		{
 			Log.error("错误的主机地址" + ip + ":" + port, e);
 			throw new ConnectException();
+		}
+		catch (BindException e)
+		{
+			Log.warn(getLocalIp() + ":" + localPort + "绑定端口失败，5秒后重试", e);
+			try
+			{
+				Thread.sleep(5000);
+				this.openConnect();
+			}
+			catch (InterruptedException e1)
+			{
+				e1.printStackTrace();
+			}
 		}
 		catch (IOException e)
 		{

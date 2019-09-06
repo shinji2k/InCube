@@ -74,6 +74,18 @@ public class Log
 	{
 		getLogger().warn(log);
 	}
+	
+	/**
+	 * 警告日志，含Exception重载
+	 * @param log
+	 * @param e
+	 * @author zhaokai
+	 * @create 2019年9月6日 上午10:04:26
+	 */
+	public static void warn(String log, Exception e)
+	{
+		getLogger().warn(log, e);
+	}
 
 	/**
 	 * 长度与配置不一致告警
