@@ -30,6 +30,7 @@ public class UdpConnector implements Connector
 	protected int localPort;
 	protected boolean isServer = false;
 	protected boolean keepAlive;
+	protected boolean isReconnect;
 
 	private DatagramSocket udpConnector;
 
@@ -207,7 +208,8 @@ public class UdpConnector implements Connector
 		else
 			this.localPort = Integer.parseInt(sockCfg.getLocalPort());
 
-		this.keepAlive = sockCfg.getKeepAlive();
+		this.keepAlive = sockCfg.isKeepAlive();
+		this.isReconnect = sockCfg.isReconnect();
 
 		String logInfo;
 		if (this.type.equals("server"))
@@ -219,4 +221,8 @@ public class UdpConnector implements Connector
 		Log.debug("接口类型为Socket-" + this.type + ", " + logInfo);
 	}
 
+	public boolean isReconnect()
+	{
+		return isReconnect;
+	}
 }

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Log
 {
-	
+//	private static 
 	private static <T>  Logger getLogger()
 	{
 		Throwable t = new Throwable();

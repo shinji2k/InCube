@@ -48,4 +48,5 @@ public interface Connector
 	
 	public String getType();
 	
+	public boolean isReconnect();
 }

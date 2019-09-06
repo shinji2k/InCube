@@ -26,6 +26,11 @@ public class ConnectException extends Exception
 		super();
 	}
 	
+	public ConnectException(IOException e)
+	{
+		super(e);
+	}
+	
 	public static void throwWriteErr(IOException e) throws ConnectException
 	{
 		Log.error("写入数据失败", e);

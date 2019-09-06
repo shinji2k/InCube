@@ -220,6 +220,11 @@ public class ConfigHandler
 	{
 		return xml.getSingleElement("/root/config/type").getStringValue();
 	}
+	
+	public String getReconnect()
+	{
+		return xml.getSingleElement("/root/config/reconnect").getStringValue();
+	}
 
 	public SocketSetting getSocketConfig()
 	{

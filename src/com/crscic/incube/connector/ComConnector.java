@@ -38,6 +38,7 @@ public class ComConnector implements Connector
 	private String stopbit;
 	private SerialPort serialPort;
 	private boolean isOpen = false;
+	private boolean isReconnect = false; //没有用到
 	private static final ComConnector connector = new ComConnector(); 
 	
 	public static ComConnector getInstance(ComSetting comCfg)
@@ -349,6 +350,10 @@ public class ComConnector implements Connector
 		return false;
 	}
 	
+	public boolean isReconnect()
+	{
+		return isReconnect;
+	}
 
 	@Override
 	public String getType()

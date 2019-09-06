@@ -33,6 +33,7 @@ public class TcpConnector implements Connector
 	protected int localPort;
 	protected boolean isServer = false;
 	protected boolean keepAlive;
+	protected boolean isReconnect;
 
 	protected Socket connector;
 	protected ServerSocket server;
@@ -64,7 +65,8 @@ public class TcpConnector implements Connector
 		else
 			this.localPort = Integer.parseInt(sockCfg.getLocalPort());
 
-		this.keepAlive = sockCfg.getKeepAlive();
+		this.keepAlive = sockCfg.isKeepAlive();
+		this.isReconnect = sockCfg.isReconnect();
 
 		String logInfo;
 		if (this.type.equals("server"))
@@ -91,7 +93,7 @@ public class TcpConnector implements Connector
 		}
 		catch (IOException e)
 		{
-			ConnectException.throwWriteErr(e);
+			throw new ConnectException(e);
 		}
 		finally
 		{
@@ -132,19 +134,23 @@ public class TcpConnector implements Connector
 			is = connector.getInputStream();
 			recvData = new ArrayList<Byte>();
 			int len = 1024;
-			// while ((len = is.available()) > 0)
-			// {
 			// 虽然几率较低，但仍有可能在从while的条件判断到read之间有新的数据进来，造成少取了数据
 			byte[] buff = new byte[len];
 			int recvLen = is.read(buff, 0, len);
 			if (recvLen != -1)
 				CollectionUtils.copyArrayToList(recvData, buff, recvLen);
-			// }
 		}
 		catch (IOException e)
 		{
-			Log.error(localIp + "的网络IO错误，无法获取输入数据", e);
+			Log.error(getLocalIp() + "的网络IO错误，无法获取输入数据", e);
 			// 无法获取输入数据后初始化connector，外面调用方需要reopen connector
+			try
+			{
+				closeConnect();
+			}
+			catch (ConnectException e1)
+			{
+			}
 			connector = null;
 		}
 		return recvData;
@@ -165,7 +171,7 @@ public class TcpConnector implements Connector
 					isServer = false;
 				}
 
-				Log.debug("使用IP地址：" + this.localIp + ", 开始连接服务: " + ip + ":" + port);
+				Log.debug("使用IP地址：" + this.localIp + ":" + localPort + ", 开始连接服务: " + ip + ":" + port);
 				if (this.localIp == null || this.localIp.equals(""))
 				{
 					connector = new Socket(ip, port);
@@ -173,6 +179,9 @@ public class TcpConnector implements Connector
 				else
 				{
 					InetAddress inet = InetAddress.getByName(this.localIp);
+					//update01:当socket异常需要重新连接时，重新选择端口。但有风险，如果持续打开新的端口，旧端口会不会回收？若不回收，是否会造成端口资源耗尽？
+					this.localPort = new Random().nextInt(55534) + 10000;
+					//update01 end
 					connector = new Socket(ip, port, inet, this.localPort);
 				}
 				Log.debug("连接成功");
@@ -193,15 +202,16 @@ public class TcpConnector implements Connector
 				connector = server.accept();
 				Log.debug("连接客户端：" + connector.getRemoteSocketAddress().toString().substring(1));
 			}
+			connector.setSoTimeout(60000);
 		}
 		catch (UnknownHostException e)
 		{
-			Log.error("错误的主机地址", e);
+			Log.error("错误的主机地址" + ip + ":" + port, e);
 			throw new ConnectException();
 		}
 		catch (IOException e)
 		{
-			Log.error(localIp + "接口打开失败", e);
+			Log.error(getLocalIp() + ":" + localPort + "接口打开失败", e);
 			throw new ConnectException();
 		}
 	}
@@ -249,6 +259,8 @@ public class TcpConnector implements Connector
 	@Override
 	public String getLocalIp()
 	{
+		if (connector == null)
+			return localIp;
 		return connector.getLocalAddress().toString().substring(1);
 	}
 
@@ -262,5 +274,10 @@ public class TcpConnector implements Connector
 	public String getType()
 	{
 		return "tcp";
+	}
+
+	public boolean isReconnect()
+	{
+		return isReconnect;
 	}
 }

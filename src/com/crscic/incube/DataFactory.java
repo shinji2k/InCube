@@ -110,6 +110,7 @@ public class DataFactory
 				else
 					sockSetting.setLocalIp(connConf);
 			}
+			sockSetting.setReconnect(config.getReconnect());
 			connector = new TcpConnector(sockSetting);
 		}
 		else if (config.getConnectType().toLowerCase().equals("com"))
@@ -129,6 +130,7 @@ public class DataFactory
 				else
 					sockSetting.setLocalIp(connConf);
 			}
+			sockSetting.setReconnect(config.getReconnect());
 			connector = new UdpConnector(sockSetting);
 		}
 

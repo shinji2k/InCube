@@ -15,6 +15,7 @@ public class SocketSetting
 	private String localIp;
 	private String port;
 	private String localPort;
+	private boolean reconnect;
 	private boolean keepAlive;
 
 	public String getType()
@@ -50,7 +51,7 @@ public class SocketSetting
 	/**
 	 * @return the keepAlive
 	 */
-	public boolean getKeepAlive()
+	public boolean isKeepAlive()
 	{
 		return keepAlive;
 	}
@@ -86,6 +87,21 @@ public class SocketSetting
 	public void setLocalPort(String localPort)
 	{
 		this.localPort = localPort;
+	}
+
+	
+	public boolean isReconnect()
+	{
+		return reconnect;
+	}
+	
+
+	public void setReconnect(String reconnect)
+	{
+		if (reconnect.trim().toLowerCase().equals("true"))
+			this.reconnect = true;
+		else	//若为空时，默认为false 
+			this.reconnect = false;
 	}
 
 }
