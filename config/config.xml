@@ -1,13 +1,20 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <root>
 	<config>
-		<!-- socket or com -->
-		<type>socket</type>
+		<!-- 是否多线程模式 -->
+		<muti>true</muti>
+		<!-- 多线程配置文件路径 -->
+		<paramFile>config\param.xml</paramFile>
+		<!-- tcp、udp or com -->
+		<type>tcp</type>
+		<!-- 断线后是否自动重连 -->
+		<reconnect>true</reconnect>
 	</config>
 
 	<com>
 		<!-- 串口号，注意：大小写敏感 -->
-		<port>COM4</port>
+		<!-- 若为多线程模式，此节点留空（需要保留节点） -->
+		<port>COM3</port>
 		<!-- 波特率 -->
 		<baudrate>9600</baudrate>
 		<!-- 数据位 -->
@@ -20,52 +27,175 @@
 		<parity>none</parity>
 	</com>
 
-	<socket>                                              
-		<!-- server or client -->
+	<socket>
 		<!-- 填写server或client -->
 		<type>server</type>
-		<!-- if server, set null -->
-		<!-- 若为server，则此节点留空（需要保留节点） -->
-		<ip></ip>
+		<!-- 若为多线程模式，此节点留空（需要保留节点） -->
+		<ip>192.168.71.212</ip>
 		<!-- 若为server，则此节点为监听端口；若为client，则此节点为连接服务器的端口 -->
 		<port>10001</port>
 		<!-- 是否长连接, true或者false -->
 		<keepAlive>true</keepAlive>
 	</socket>
-
-	<send file="config\com\air-condition.xml">
-		<interval time="1000" protocol="analog" />
-		<!-- <interval time="10000" protocol="alarm_report" /> <interval time="5000" 
-			protocol="status" /> <interval time="5000" protocol="alarm" /> -->
-	</send>
-
-	<reply file="config\socket\scada.xml">
-		<response>
+	
+	<!-- 目前send、reply、interchange节点只支持有1个 -->
+	<!-- <send file="config\socket\tower.xml">
+		<interval time="1000" protocol="real" />
+	</send> -->
+	
+<!-- 铁塔配置 
+	<reply file="config\socket\tower.xml">
+		<response desc="real">
 			<field>19,22</field>
 			<value>00000191</value>
 			<head>23646c686a7478787923</head>
 			<tail></tail>
 			<class>byte</class>
-			<pro>real-time</pro>
+			<pro>real</pro>
+			<quote />
+		</response>
+	</reply>
+-->
+<!-- 海信精密空调配置
+	<reply file="config\com\Hisense-ac.xml">
+		<response desc="查询模拟量">
+			<field>8,9</field>
+			<value>3432</value>
+			<head>7E</head>
+			<tail>0D</tail>
+			<class>byte</class>
+			<pro>analog</pro>
 			<quote>
-				<!--<field name="ver,adr">2,5</field>
-				<field name="cid1">6,9</field> -->
+				<field name="adr">4,5</field> 
 			</quote>
 		</response>
-		<response>
+		<response desc="查询开关量">
+			<field>8,9</field>
+			<value>3433</value>
+			<head>7E</head>
+			<tail>0D</tail>
+			<class>byte</class>
+			<pro>switch</pro>
+			<quote>
+				<field name="adr">4,5</field> 
+			</quote>
+		</response>
+		<response desc="查询告警量">
+			<field>8,9</field>
+			<value>3434</value>
+			<head>7E</head>
+			<tail>0D</tail>
+			<class>byte</class>
+			<pro>alarm</pro>
+			<quote>
+				<field name="adr">4,5</field> 
+			</quote>
+		</response>
+		<response desc="查询告警量">
+			<field>8,9</field>
+			<value>3437</value>
+			<head>7E</head>
+			<tail>0D</tail>
+			<class>byte</class>
+			<pro>setting</pro>
+			<quote>
+				<field name="adr">4,5</field> 
+			</quote>
+		</response>
+		<response desc="遥控">
+			<field>8,9</field>
+			<value>3435</value>
+			<head>7E</head>
+			<tail>0D</tail>
+			<class>byte</class>
+			<pro>recv-check</pro>
+			<quote>
+				<field name="adr">4,5</field> 
+			</quote>
+		</response>
+		<response desc="设置参数">
+			<field>8,9</field>
+			<value>3439</value>
+			<head>7E</head>
+			<tail>0D</tail>
+			<class>byte</class>
+			<pro>recv-check</pro>
+			<quote>
+				<field name="adr">4,5</field> 
+			</quote>
+		</response>
+	</reply>
+ -->
+<!-- 	动环平台配置-->
+	<reply file="config\socket\scada_C1.xml">
+		<response desc="login-101">
 			<field>19,22</field>
 			<value>00000065</value>
-			<head>23646c686a7478787923</head>
+			<head>23646C686A7878787923</head>
 			<tail></tail>
 			<class>byte</class>
 			<pro>login-response</pro>
-			<quote/>
+			<quote>
+				<field name="serials_no">15,18</field> 
+			</quote>
 		</response>
-	</reply>
-	
-	<pair>
-		<device file="config\device\air-condition\parseConfig.xml">测试空调1</device>
-		<device file="config\device\air-condition\parseConfig2.xml">测试空调2</device>
-		<device file="config\device\air-condition\parseConfig3.xml">测试空调2</device>
-	</pair>
+		<response desc="heartbeat">
+			<field>19,22</field>
+			<value>000004b1</value>
+			<head>23646C686A7878787923</head>
+			<tail></tail>
+			<class>byte</class>
+			<pro>heartbeat-resp</pro>
+			<quote>
+				<field name="serials_no">15,18</field> 
+			</quote>
+		</response>
+		<response desc="setAlarm-501">
+			<field>19,22</field>
+			<value>000001f5</value>
+			<head>23646C686A7878787923</head>
+			<tail></tail>
+			<class>byte</class>
+			<pro>setAlarm-resp</pro>
+			<quote>
+				<field name="serials_no">15,18</field> 
+			</quote>
+		</response>
+	 
+		<response desc="请求节点以下的整个树ID-201">
+			<field>19,22</field>
+			<value>000000c9</value>
+			<head>23646C686A7878787923</head>
+			<tail></tail>
+			<class>byte</class>
+			<pro>getNodes-resp</pro>
+			<quote>
+				<field name="serials_no">15,18</field> 
+			</quote>
+		</response>
+		<response desc="请求数据属性-301">
+			<field>19,22</field>
+			<value>0000012d</value>
+			<head>23646C686A7878787923</head>
+			<tail></tail>
+			<class>byte</class>
+			<pro>getProperty-resp</pro>
+			<quote>
+				<field name="serials_no">15,18</field>-->	
+				<!-- 平台请求详细信息的ID -->
+			<field name="storageNode">27,30</field>
+			</quote>
+		</response>
+		<response desc="请求实时数据-401">
+			<field>19,22</field>
+			<value>00000191</value>
+			<head>23646C686A7878787923</head>
+			<tail></tail>
+			<class>byte</class>
+			<pro>real-time</pro>
+			<quote>
+				<field name="serials_no">15,18</field> 
+			</quote>
+		</response>
+	</reply> 
 </root>

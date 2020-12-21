@@ -1,0 +1,3550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+	<protocols desc="这个列表提供配置文件中配置的协议列表方便查看，程序并不会使用">
+		<pro desc="实时数据响应-402 ">real-time</pro>
+		<pro desc="登录响应-102">login-response</pro>
+		<pro desc="心跳响应-1202">heartbeat-resp</pro>
+		<pro des="设置告警上报方式响应-502">setAlarm-resp</pro>
+		<pro des="获取告警历史响应-902">alarmHistory-resp</pro>
+		<pro desc="请求节点以下的整个树ID响应-202">getNodes-resp</pro>
+		<pro desc="请求数据属性响应-302">getProperty-resp</pro>
+		<!-- 模拟综合网管发送协议 -->
+		<pro desc="登录请求">login-req</pro>    
+	</protocols>
+
+	<real-time>
+		<part name="head" desc="数据包头">
+			<type>aptotic</type>
+			<value>23646C686A7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>00000192</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="content" desc="业务数据内容">
+			<type>generate</type>
+			<value>
+				<part name="gourpId" desc="组ID">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="result" desc="查询结果">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="count" desc="监测点数量">
+					<type>aptotic</type>
+					<value>00000054</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="infraredType" desc="红外的设备类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="infraredId" desc="红外的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="infraredValue" desc="红外的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<!-- 与动环的实际实现一致，DI为1字节。与铁标不符，铁标要求4字节 -->
+				<!-- 背景：铁科过CRCC时使用瑞尔的系统测得，瑞尔就是这么实现的，也就是说，有可能瑞尔的就是错的 -->
+				<part name="infraredStatus" desc="红外的告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorType" desc="烟感的设备类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorId" desc="烟感的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorValue" desc="烟感的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="smokeDetectorStatus" desc="烟感的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="doorType" desc="门磁的设备类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="doorId" desc="门磁的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="doorValue" desc="门磁的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="doorStatus" desc="门磁的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="temperatureType" desc="温度的设备类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="temperatureId" desc="温度的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="temperatureValue" desc="温度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="temperatureStatus" desc="温度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="humidityType" desc="湿度的设备类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="humidityId" desc="湿度的设备ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="humidityValue" desc="湿度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="humidityStatus" desc="湿度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAType" desc="告警量A相电压类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAId" desc="告警量A相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAValue" desc="告警量A相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="voltageDIAStatus" desc="告警量A相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBType" desc="告警量B相电压类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBId" desc="告警量B相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBValue" desc="告警量B相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="voltageDIBStatus" desc="告警量B相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICType" desc="告警量C相电压类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICId" desc="告警量C相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICValue" desc="告警量C相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="voltageDICStatus" desc="告警量C相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIAType" desc="告警量A相电流类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIAId" desc="告警量A相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIAValue" desc="告警量A相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="electricityDIAStatus" desc="告警量A相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBType" desc="告警量B相电流类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBId" desc="告警量B相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBValue" desc="告警量B相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="electricityDIBStatus" desc="告警量B相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICType" desc="告警量C相电流类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICId" desc="告警量C相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICValue" desc="告警量C相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="electricityDICStatus" desc="告警量C相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIType" desc="告警量回风温度类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIId" desc="告警量回风温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIValue" desc="告警量回风温度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="returnAirTemperatureDIStatus" desc="告警量回风温度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIType" desc="告警量回风湿度类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIId" desc="告警量回风湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIValue" desc="告警量回风湿度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="returnAirHumidityDIStatus" desc="告警量回风湿度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAType" desc="模拟量A相电压类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAId" desc="模拟量A相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAValue" desc="模拟量A相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAStatus" desc="模拟量A相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBType" desc="模拟量B相电压类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBId" desc="模拟量B相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBValue" desc="模拟量B相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBStatus" desc="模拟量B相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICType" desc="模拟量C相电压类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICId" desc="模拟量C相电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICValue" desc="模拟量C相电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICStatus" desc="模拟量C相电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAType" desc="模拟量A相电流类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAId" desc="模拟量A相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAValue" desc="模拟量A相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIAStatus" desc="模拟量A相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBType" desc="模拟量B相电流类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBId" desc="模拟量B相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBValue" desc="模拟量B相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBStatus" desc="模拟量B相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICType" desc="模拟量C相电流类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICId" desc="模拟量C相电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICValue" desc="模拟量C相电流的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICStatus" desc="模拟量C相电流的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIType" desc="模拟量回风温度类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIId" desc="模拟量回风温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIValue" desc="模拟量回风温度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIStatus" desc="模拟量回风温度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIType" desc="模拟量回风湿度类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIId" desc="模拟量回风湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIValue" desc="模拟量回风湿度的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIStatus" desc="模拟量回风湿度的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+<part name="battery01TemperatureDIType" desc="电池01温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01TemperatureDIId" desc="电池01温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01TemperatureDIValue" desc="电池01温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery01TemperatureDIStatus" desc="电池01温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01ResistanceDIType" desc="电池01内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01ResistanceDIId" desc="电池01内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01ResistanceDIValue" desc="电池01内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery01ResistanceDIStatus" desc="电池01内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01CollectionDIType" desc="电池01采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01CollectionDIId" desc="电池01采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01CollectionDIValue" desc="电池01采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery01CollectionDIStatus" desc="电池01采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02TemperatureDIType" desc="电池02温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02TemperatureDIId" desc="电池02温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02TemperatureDIValue" desc="电池02温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery02TemperatureDIStatus" desc="电池02温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02ResistanceDIType" desc="电池02内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02ResistanceDIId" desc="电池02内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02ResistanceDIValue" desc="电池02内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery02ResistanceDIStatus" desc="电池02内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02CollectionDIType" desc="电池02采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02CollectionDIId" desc="电池02采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02CollectionDIValue" desc="电池02采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery02CollectionDIStatus" desc="电池02采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03TemperatureDIType" desc="电池03温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03TemperatureDIId" desc="电池03温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03TemperatureDIValue" desc="电池03温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery03TemperatureDIStatus" desc="电池03温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03ResistanceDIType" desc="电池03内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03ResistanceDIId" desc="电池03内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03ResistanceDIValue" desc="电池03内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery03ResistanceDIStatus" desc="电池03内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03CollectionDIType" desc="电池03采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03CollectionDIId" desc="电池03采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03CollectionDIValue" desc="电池03采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery03CollectionDIStatus" desc="电池03采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04TemperatureDIType" desc="电池04温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04TemperatureDIId" desc="电池04温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04TemperatureDIValue" desc="电池04温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery04TemperatureDIStatus" desc="电池04温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04ResistanceDIType" desc="电池04内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04ResistanceDIId" desc="电池04内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04ResistanceDIValue" desc="电池04内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery04ResistanceDIStatus" desc="电池04内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04CollectionDIType" desc="电池04采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04CollectionDIId" desc="电池04采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04CollectionDIValue" desc="电池04采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery04CollectionDIStatus" desc="电池04采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05TemperatureDIType" desc="电池05温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05TemperatureDIId" desc="电池05温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05TemperatureDIValue" desc="电池05温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery05TemperatureDIStatus" desc="电池05温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05ResistanceDIType" desc="电池05内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05ResistanceDIId" desc="电池05内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05ResistanceDIValue" desc="电池05内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery05ResistanceDIStatus" desc="电池05内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05CollectionDIType" desc="电池05采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05CollectionDIId" desc="电池05采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05CollectionDIValue" desc="电池05采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery05CollectionDIStatus" desc="电池05采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06TemperatureDIType" desc="电池06温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06TemperatureDIId" desc="电池06温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06TemperatureDIValue" desc="电池06温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery06TemperatureDIStatus" desc="电池06温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06ResistanceDIType" desc="电池06内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06ResistanceDIId" desc="电池06内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06ResistanceDIValue" desc="电池06内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery06ResistanceDIStatus" desc="电池06内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06CollectionDIType" desc="电池06采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06CollectionDIId" desc="电池06采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06CollectionDIValue" desc="电池06采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery06CollectionDIStatus" desc="电池06采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07TemperatureDIType" desc="电池07温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07TemperatureDIId" desc="电池07温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07TemperatureDIValue" desc="电池07温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery07TemperatureDIStatus" desc="电池07温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07ResistanceDIType" desc="电池07内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07ResistanceDIId" desc="电池07内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07ResistanceDIValue" desc="电池07内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery07ResistanceDIStatus" desc="电池07内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07CollectionDIType" desc="电池07采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07CollectionDIId" desc="电池07采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07CollectionDIValue" desc="电池07采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery07CollectionDIStatus" desc="电池07采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08TemperatureDIType" desc="电池08温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08TemperatureDIId" desc="电池08温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08TemperatureDIValue" desc="电池08温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery08TemperatureDIStatus" desc="电池08温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08ResistanceDIType" desc="电池08内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08ResistanceDIId" desc="电池08内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08ResistanceDIValue" desc="电池08内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery08ResistanceDIStatus" desc="电池08内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08CollectionDIType" desc="电池08采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08CollectionDIId" desc="电池08采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08CollectionDIValue" desc="电池08采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery08CollectionDIStatus" desc="电池08采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09TemperatureDIType" desc="电池09温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09TemperatureDIId" desc="电池09温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09TemperatureDIValue" desc="电池09温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery09TemperatureDIStatus" desc="电池09温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09ResistanceDIType" desc="电池09内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09ResistanceDIId" desc="电池09内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09ResistanceDIValue" desc="电池09内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery09ResistanceDIStatus" desc="电池09内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09CollectionDIType" desc="电池09采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09CollectionDIId" desc="电池09采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09CollectionDIValue" desc="电池09采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery09CollectionDIStatus" desc="电池09采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10TemperatureDIType" desc="电池10温度告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10TemperatureDIId" desc="电池10温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10TemperatureDIValue" desc="电池10温度告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery10TemperatureDIStatus" desc="电池10温度告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10ResistanceDIType" desc="电池10内阻告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10ResistanceDIId" desc="电池10内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10ResistanceDIValue" desc="电池10内阻告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery10ResistanceDIStatus" desc="电池10内阻告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10CollectionDIType" desc="电池10采集告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10CollectionDIId" desc="电池10采集告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10CollectionDIValue" desc="电池10采集告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery10CollectionDIStatus" desc="电池10采集告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="batteryAmpereCollectionDIType" desc="电流采集状态告警类型，2-DI">
+					<type>aptotic</type>
+					<value>00000002</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="batteryAmpereCollectionDIId" desc="电流采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryAmpereCollectionDIValue" desc="电流采集状态告警读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="batteryAmpereCollectionDIStatus" desc="电流采集状态告警状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="batterySumVoltageAIType" desc="电池总电压类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="batterySumVoltageAIId" desc="电池总电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batterySumVoltageAIValue" desc="电池总电压的设备读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batterySumVoltageAIStatus" desc="电池总电压的设备状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01TemperatureAIType" desc="电池01温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01TemperatureAIId" desc="电池01温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01TemperatureAIValue" desc="电池01温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery01TemperatureAIStatus" desc="电池01温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01ResistanceAIType" desc="电池01内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01ResistanceAIId" desc="电池01内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01ResistanceAIValue" desc="电池01内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery01ResistanceAIStatus" desc="电池01内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01VoltageAIType" desc="电池01电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery01VoltageAIId" desc="电池01电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01VoltageAIValue" desc="电池01电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery01VoltageAIStatus" desc="电池01电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02TemperatureAIType" desc="电池02温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02TemperatureAIId" desc="电池02温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02TemperatureAIValue" desc="电池02温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery02TemperatureAIStatus" desc="电池02温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02ResistanceAIType" desc="电池02内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02ResistanceAIId" desc="电池02内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02ResistanceAIValue" desc="电池02内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery02ResistanceAIStatus" desc="电池02内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02VoltageAIType" desc="电池02电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery02VoltageAIId" desc="电池02电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02VoltageAIValue" desc="电池02电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery02VoltageAIStatus" desc="电池02电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03TemperatureAIType" desc="电池03温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03TemperatureAIId" desc="电池03温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03TemperatureAIValue" desc="电池03温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery03TemperatureAIStatus" desc="电池03温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03ResistanceAIType" desc="电池03内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03ResistanceAIId" desc="电池03内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03ResistanceAIValue" desc="电池03内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery03ResistanceAIStatus" desc="电池03内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03VoltageAIType" desc="电池03电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery03VoltageAIId" desc="电池03电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03VoltageAIValue" desc="电池03电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery03VoltageAIStatus" desc="电池03电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04TemperatureAIType" desc="电池04温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04TemperatureAIId" desc="电池04温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04TemperatureAIValue" desc="电池04温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery04TemperatureAIStatus" desc="电池04温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04ResistanceAIType" desc="电池04内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04ResistanceAIId" desc="电池04内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04ResistanceAIValue" desc="电池04内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery04ResistanceAIStatus" desc="电池04内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04VoltageAIType" desc="电池04电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery04VoltageAIId" desc="电池04电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04VoltageAIValue" desc="电池04电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery04VoltageAIStatus" desc="电池04电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05TemperatureAIType" desc="电池05温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05TemperatureAIId" desc="电池05温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05TemperatureAIValue" desc="电池05温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery05TemperatureAIStatus" desc="电池05温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05ResistanceAIType" desc="电池05内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05ResistanceAIId" desc="电池05内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05ResistanceAIValue" desc="电池05内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery05ResistanceAIStatus" desc="电池05内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05VoltageAIType" desc="电池05电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery05VoltageAIId" desc="电池05电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05VoltageAIValue" desc="电池05电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery05VoltageAIStatus" desc="电池05电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06TemperatureAIType" desc="电池06温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06TemperatureAIId" desc="电池06温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06TemperatureAIValue" desc="电池06温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery06TemperatureAIStatus" desc="电池06温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06ResistanceAIType" desc="电池06内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06ResistanceAIId" desc="电池06内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06ResistanceAIValue" desc="电池06内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery06ResistanceAIStatus" desc="电池06内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06VoltageAIType" desc="电池06电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery06VoltageAIId" desc="电池06电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06VoltageAIValue" desc="电池06电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery06VoltageAIStatus" desc="电池06电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07TemperatureAIType" desc="电池07温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07TemperatureAIId" desc="电池07温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07TemperatureAIValue" desc="电池07温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery07TemperatureAIStatus" desc="电池07温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07ResistanceAIType" desc="电池07内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07ResistanceAIId" desc="电池07内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07ResistanceAIValue" desc="电池07内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery07ResistanceAIStatus" desc="电池07内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07VoltageAIType" desc="电池07电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery07VoltageAIId" desc="电池07电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07VoltageAIValue" desc="电池07电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery07VoltageAIStatus" desc="电池07电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08TemperatureAIType" desc="电池08温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08TemperatureAIId" desc="电池08温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08TemperatureAIValue" desc="电池08温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery08TemperatureAIStatus" desc="电池08温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08ResistanceAIType" desc="电池08内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08ResistanceAIId" desc="电池08内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08ResistanceAIValue" desc="电池08内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery08ResistanceAIStatus" desc="电池08内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08VoltageAIType" desc="电池08电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery08VoltageAIId" desc="电池08电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08VoltageAIValue" desc="电池08电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery08VoltageAIStatus" desc="电池08电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09TemperatureAIType" desc="电池09温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09TemperatureAIId" desc="电池09温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09TemperatureAIValue" desc="电池09温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery09TemperatureAIStatus" desc="电池09温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09ResistanceAIType" desc="电池09内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09ResistanceAIId" desc="电池09内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09ResistanceAIValue" desc="电池09内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery09ResistanceAIStatus" desc="电池09内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09VoltageAIType" desc="电池09电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery09VoltageAIId" desc="电池09电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09VoltageAIValue" desc="电池09电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery09VoltageAIStatus" desc="电池09电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10TemperatureAIType" desc="电池10温度值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10TemperatureAIId" desc="电池10温度值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10TemperatureAIValue" desc="电池10温度值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery10TemperatureAIStatus" desc="电池10温度值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10ResistanceAIType" desc="电池10内阻值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10ResistanceAIId" desc="电池10内阻值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10ResistanceAIValue" desc="电池10内阻值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery10ResistanceAIStatus" desc="电池10内阻值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10VoltageAIType" desc="电池10电压值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="battery10VoltageAIId" desc="电池10电压值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10VoltageAIValue" desc="电池10电压值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="battery10VoltageAIStatus" desc="电池10电压值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="batteryAmpereAIType" desc="电池充放电电流值类型，3-AI">
+					<type>aptotic</type>
+					<value>00000003</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="batteryAmpereAIId" desc="电池充放电电流值ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryAmpereAIValue" desc="电池充放电电流值读值">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>1</len>
+				</part>
+				<part name="batteryAmpereAIStatus" desc="电池充放电电流值状态">
+					<type>aptotic</type>
+					<value>00000000</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>				  
+			</value>
+			<class>asc</class>
+			<len></len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content
+					</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</real-time>
+
+	<getNodes-resp desc="返回树结构-202">
+		<part name="head" desc="数据包头">
+			<type>aptotic</type>
+			<value>23646C686A7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>000000ca</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="content" desc="业务数据内容">
+			<type>generate</type>
+			<value>
+				<part name="count" desc="监测点数量">
+					<type>aptotic</type>
+					<value>00000058</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<!--  监测单元，共1个  -->
+				<part name="suId" desc="监测单元ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="stationId" desc="监测站ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<!--  环境信息，1个文件夹，5个监测点，共6个  -->
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="suId" desc="监测单元ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="infraredId" desc="红外ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="smokeDetectorId" desc="烟感ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="doorId" desc="门磁ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="temperatureId" desc="温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="humidityId" desc="湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="envFolderId" desc="环境信息文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<!-- 新增空调部分数据，1个文件夹，8个模拟量，8个告警量，共17个-->
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="suId" desc="监测单元ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIAId" desc="告警量A相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDIBId" desc="告警量B相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageDICId" desc="告警量C相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+			    <part name="electricityDIAId" desc="告警量A相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDIBId" desc="告警量B相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityDICId" desc="告警量C相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureDIId" desc="告警量回风温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityDIId" desc="告警量回风湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIAId" desc="模拟量A相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAIBId" desc="模拟量B相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="voltageAICId" desc="模拟量C相电压">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+			    <part name="electricityAIAId" desc="模拟量A相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAIBId" desc="模拟量B相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="electricityAICId" desc="模拟量C相电流">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirTemperatureAIId" desc="模拟量回风温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="returnAirHumidityAIId" desc="模拟量回风湿度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="airConditionFolderId" desc="空调文件夹ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<!--蓄电池部分，包括电池组（文件夹）*1、告警量：3个监测点*电池10块，电流检测模块告警*1；模拟量：总电压*1、3个模拟量*电池10块，电流检测读值*1，共64个部分-->
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="suId" desc="监测单元ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01TemperatureDIId" desc="电池01温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01ResistanceDIId" desc="电池01内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01CollectionDIId" desc="电池01采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02TemperatureDIId" desc="电池02温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02ResistanceDIId" desc="电池02内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02CollectionDIId" desc="电池02采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03TemperatureDIId" desc="电池03温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03ResistanceDIId" desc="电池03内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03CollectionDIId" desc="电池03采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04TemperatureDIId" desc="电池04温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04ResistanceDIId" desc="电池04内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04CollectionDIId" desc="电池04采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05TemperatureDIId" desc="电池05温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05ResistanceDIId" desc="电池05内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05CollectionDIId" desc="电池05采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06TemperatureDIId" desc="电池06温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06ResistanceDIId" desc="电池06内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06CollectionDIId" desc="电池06采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07TemperatureDIId" desc="电池07温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07ResistanceDIId" desc="电池07内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07CollectionDIId" desc="电池07采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08TemperatureDIId" desc="电池08温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08ResistanceDIId" desc="电池08内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08CollectionDIId" desc="电池08采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09TemperatureDIId" desc="电池09温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09ResistanceDIId" desc="电池09内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09CollectionDIId" desc="电池09采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10TemperatureDIId" desc="电池10温度告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10ResistanceDIId" desc="电池10内阻告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10CollectionDIId" desc="电池10采集状态告警ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryAmpereCollectionDIId" desc="电流采集状态ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batterySumVoltageAIId" desc="电池总电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01TemperatureAIId" desc="电池01温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01ResistanceAIId" desc="电池01内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery01VoltageAIId" desc="电池01电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02TemperatureAIId" desc="电池02温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02ResistanceAIId" desc="电池02内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery02VoltageAIId" desc="电池02电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03TemperatureAIId" desc="电池03温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03ResistanceAIId" desc="电池03内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery03VoltageAIId" desc="电池03电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04TemperatureAIId" desc="电池04温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04ResistanceAIId" desc="电池04内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery04VoltageAIId" desc="电池04电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05TemperatureAIId" desc="电池05温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05ResistanceAIId" desc="电池05内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery05VoltageAIId" desc="电池05电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06TemperatureAIId" desc="电池06温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06ResistanceAIId" desc="电池06内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery06VoltageAIId" desc="电池06电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07TemperatureAIId" desc="电池07温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07ResistanceAIId" desc="电池07内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery07VoltageAIId" desc="电池07电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08TemperatureAIId" desc="电池08温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08ResistanceAIId" desc="电池08内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery08VoltageAIId" desc="电池08电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09TemperatureAIId" desc="电池09温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09ResistanceAIId" desc="电池09内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery09VoltageAIId" desc="电池09电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10TemperatureAIId" desc="电池10温度ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10ResistanceAIId" desc="电池10内阻ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="battery10VoltageAIId" desc="电池10电压ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryAmpereAIId" desc="电池充放电电流ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+				<part name="batteryFolderId" desc="电池组（文件夹）ID">
+					<type>parameter</type>
+					<value></value>
+					<class></class>
+					<len>4</len>
+				</part>
+		 	</value>
+			<class></class>
+			<len>4</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content
+					</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</getNodes-resp>
+
+	<getProperty-resp desc="返回数据属性-302">
+		<part name="head" desc="数据包头">
+			<type>aptotic</type>
+			<value>23646C686A7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，302数据属性回复信息">
+			<type>aptotic</type>
+			<value>0000012e</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="content" desc="数据属性内容">
+			<type>generate</type>
+			<value>
+				<part name="count" desc="监测点数量">
+					<type>aptotic</type>
+					<value>00000001</value>
+					<class>byte</class>
+					<len>4</len>
+				</part>
+				<part name="storageNode" desc="监测点详情">
+					<type>storage</type>
+					<value>config/storage_C1.xml</value>
+					<class>byte</class>
+					<len></len>
+				</part>
+			</value>
+			<class></class>
+			<len>4</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</getProperty-resp>
+
+	<login-response desc="登录响应信息全部数据作为固定字段回复-102">
+		<part name="head" desc="头">
+			<type>aptotic</type>
+			<value>23646c686a7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>00000066</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="content">
+			<type>aptotic</type>
+			<value>00000002</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content
+					</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</login-response>
+
+	<heartbeat-resp desc="心跳响应信息全部数据作为固定字段回复-1202">
+		<part name="head" desc="头">
+			<type>aptotic</type>
+			<value>23646c686a7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>000004b2</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType
+					</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</heartbeat-resp>
+
+	<setAlarm-resp desc="设置告警上报方式响应信息全部数据作为固定字段回复-502">
+		<part name="head" desc="头">
+			<type>aptotic</type>
+			<value>23646c686a7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="length" desc="报文总长度">
+			<type>length</type>
+			<value>
+				<part name="length-range" desc="不包含帧头和CRC校验外其他所有字节的总长度">
+					<type>length</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class>asc</class>
+					<len>4</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len>4</len>
+		</part>
+		<part name="serials_no" desc="序列号">
+			<type>request</type>
+			<value></value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="pkType" desc="类型定义，402实时数据回复信息">
+			<type>aptotic</type>
+			<value>000001f6</value>
+			<class>byte</class>
+			<len>4</len>
+		</part>
+		<part name="content">
+			<type>aptotic</type>
+			<value>0000000000000001</value>
+			<class>byte</class>
+			<len>8</len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>length,serials_no,pkType,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</setAlarm-resp>
+
+	<alarmHistory-resp desc="获取告警历史响应信息全部数据作为固定字段回复-902">
+		<part name="902" >
+			<type>aptotic</type>
+			<value>23646c686a7478787923000000100002fe100000038600000000abc3
+			</value>
+			<class>byte</class>
+			<len>28</len>
+		</part>
+	</alarmHistory-resp>
+
+	<!-- 模拟综合网管发送协议 -->
+	<login-req>
+		<part name="head" desc="头">
+			<type>aptotic</type>
+			<value>23646c686a7478787923</value>
+			<class>byte</class>
+			<len>10</len>
+		</part>
+		<part name="len_sn_pk" desc="长度+sn+pk">
+			<type>aptotic</type>
+			<value>0000004800023cfd00000065</value>
+			<class>byte</class>
+			<len>12</len>
+		</part>
+		<part name="content" desc="内容，用户名+密码">
+			<type>generate</type>
+			<value>
+				<part name="username" desc="用户名">
+					<type>aptotic</type>
+					<value>inm</value>
+					<split></split>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>asc</class>
+					<len>40</len>
+				</part>
+				<part name="password" desc="密码">
+					<type>aptotic</type>
+					<value>inm</value>
+					<split></split>
+					<fill-byte>20</fill-byte>
+					<fill-direction>right</fill-direction>
+					<class>asc</class>
+					<len>20</len>
+				</part>
+			</value>
+			<class>asc</class>
+			<len></len>
+		</part>
+		<part name="check" desc="校验码">
+			<type>check</type>
+			<value>
+				<part name="check-info" desc="长度+报文序号+命令字+内容">
+					<type>crc</type>
+					<value>len_sn_pk,content</value>
+					<split>,</split>
+					<fill-byte></fill-byte>
+					<fill-direction></fill-direction>
+					<class></class>
+					<len></len>
+				</part>
+			</value>
+			<class>byte</class>
+			<len>2</len>
+		</part>
+	</login-req>
+</root>

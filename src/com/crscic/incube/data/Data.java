@@ -328,7 +328,8 @@ public class Data
 			if (param.equals("lastRandomByteMap"))
 				params.add(lastRandomByteMap);
 		}
-
+		
+		//length与check字段在方法内进行了缓存操作，因此必须保证此步在返回之前执行过
 		b = typeParser.getSendData(params);
 		
 		//如果只缓存不处理的话，强制返回null。目前仅length和校验字段会缓存数据
